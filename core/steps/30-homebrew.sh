@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Homebrew: install if missing (correct prefix per chip), then brew bundle.
+set -euo pipefail
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
+
+if is_installed brew; then
+  log "Homebrew present: $(brew --prefix)"
+else
+  log "Installing Homebrew (non-interactive)..."
+  NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  if [[ -x /opt/homebrew/bin/brew ]]; then
+    export PATH="/opt/homebrew/bin:$PATH"
+  fi
+  is_installed brew || fail "Homebrew install failed"
+fi
+
+if [[ -f "$LAPTOP_REPO_DIR/Brewfile" ]]; then
+  run_cmd "brew bundle" brew bundle --file="$LAPTOP_REPO_DIR/Brewfile"
+else
+  log "no Brewfile — skipping brew bundle"
+fi
