@@ -5,6 +5,7 @@
 #   loop/loop.sh --once      run one iteration and exit
 #   loop/loop.sh --daemon    run forever in the background (nohup)
 #   loop/loop.sh --stop      stop a running daemon
+#   loop/loop.sh --deep      run one large improvement pass and exit
 #   loop/loop.sh --status    show backoff level and last run
 set -euo pipefail
 
@@ -77,8 +78,9 @@ status() {
 
 case "${1:-}" in
   --once)   iterate ;;
+  --deep)   LAPTOP_PASS_SIZE=large bash "$REPO_DIR/loop/iterate.sh" ;;
   --daemon) daemon ;;
   --stop)   stop_daemon ;;
   --status) status ;;
-  *) echo "usage: loop/loop.sh --once|--daemon|--stop|--status"; exit 1 ;;
+  *) echo "usage: loop/loop.sh --once|--deep|--daemon|--stop|--status"; exit 1 ;;
 esac

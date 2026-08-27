@@ -18,7 +18,8 @@ it defines the two modes (improve / provision) and the quality bar.
 
 ## Rules for the loop
 
-- One bounded change per pass (see `PROMPT.md` Improve mode).
+- One pass per iteration; scope by `LAPTOP_PASS_SIZE` (`small` default,
+  `medium`, `large` — see `PROMPT.md` Improve mode).
 - Never touch secrets, `loop/state/`, or anything gitignored.
 - Never rewrite working code for style.
 - Always run `tests/run.sh` before committing; revert if red.

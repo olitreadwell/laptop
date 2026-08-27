@@ -15,6 +15,12 @@ if ! run_checks; then
   exit 1
 fi
 
+PASS_SIZE="${LAPTOP_PASS_SIZE:-small}"
+case "$PASS_SIZE" in
+  small|medium|large) ;;
+  *) echo "[iterate] invalid LAPTOP_PASS_SIZE=$PASS_SIZE (small|medium|large)"; exit 1 ;;
+esac
+
 AGENT="${LAPTOP_AGENT:-auto}"
 case "$AGENT" in
   none)
@@ -35,9 +41,19 @@ case "$AGENT" in
     ;;
 esac
 
-PROMPT="Read PROMPT.md. Run ONE bounded improvement pass per its Improve mode rules. Pick one small change: fix a failing check, improve one step, research one approach, or tighten one safety gap. Keep it idempotent, safe, and verifiable. Do not touch secrets. Then run tests/run.sh and fix until green."
+case "$PASS_SIZE" in
+  small)
+    PROMPT="Read PROMPT.md. Run ONE bounded improvement pass per its Improve mode rules. Pick one small change: fix a failing check, improve one step, research one approach, or tighten one safety gap. Keep it idempotent, safe, and verifiable. Do not touch secrets. Then run tests/run.sh and fix until green."
+    ;;
+  medium)
+    PROMPT="Read PROMPT.md. Run ONE improvement pass. Scope: a few related changes that together improve one area — e.g. one step plus its docs plus its test, or one knowledge section plus its decision. Keep it idempotent, safe, and verifiable. Do not touch secrets. Then run tests/run.sh and fix until green."
+    ;;
+  large)
+    PROMPT="Read PROMPT.md. Run ONE deep improvement pass. Scope: a larger improvement — add a new step, refactor an area, add platform support (linux/pi/server), or fix a systemic gap. Multiple related changes OK. Keep it idempotent, safe, and verifiable. Update docs and tests in the same pass. Do not touch secrets. Then run tests/run.sh and fix until green."
+    ;;
+esac
 
-echo "[iterate] agent pass via $AGENT"
+echo "[iterate] agent pass via $AGENT (size=$PASS_SIZE)"
 case "$AGENT" in
   codex)    codex exec --skip-git-repo-check "$PROMPT" ;;
   claude)   claude -p "$PROMPT" ;;

@@ -130,14 +130,17 @@ Run by `loop/loop.sh` with exponential backoff: 15 min → 30 min → 60 min
 1. `git pull --ff-only` (offline → skip silently).
 2. Run checks: `bash -n` all scripts + `tests/run.sh`.
 3. If an agent CLI is available (`codex`, `claude`, `opencode` — first found,
-   override with `LAPTOP_AGENT`), run ONE bounded improvement pass with this
-   file as context. Scope per pass (pick one):
-   - Fix a failing check or test.
-   - Add or improve one step or one piece of knowledge.
-   - Research one new approach (web) and record it in `knowledge/research.md`.
-   - Tighten one safety or error-handling gap.
-   Do NOT: rewrite working code for style, add unrequested features, touch
-   secrets, or make changes that can't be verified.
+   override with `LAPTOP_AGENT`), run ONE improvement pass with this file as
+   context. Pass size is set by `LAPTOP_PASS_SIZE` (default `small`):
+   - `small` — one bounded change: fix a failing check, improve one step,
+     research one approach, tighten one safety gap.
+   - `medium` — a few related changes that improve one area (step + its docs
+     + its test, or a knowledge section + its decision).
+   - `large` — a bigger improvement: new step, refactor, platform support
+     (linux/pi/server), or a systemic gap. Multiple related changes OK.
+   All sizes: keep it idempotent, safe, and verifiable; update docs and tests
+   in the same pass. Do NOT: rewrite working code for style, add unrequested
+   features, touch secrets, or make changes that can't be verified.
 4. Re-run checks. Green + changes → commit (Conventional Commits) and push.
    Not green → revert the pass, log why.
 5. Backoff: no changes → next level (15 → 30 → 60, cap 60). Changes or

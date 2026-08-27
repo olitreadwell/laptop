@@ -26,7 +26,9 @@ Full new-machine walkthrough: `docs/new-machine-runbook.md`.
 - `make check` — syntax + detect + plan + shellcheck tests.
 - `make snapshot` — regenerate `knowledge/current-machine.md` +
   `knowledge/tool-inventory.md` from this machine.
-- `bash loop/loop.sh --once|--daemon|--stop|--status` — improvement loop.
+- `bash loop/loop.sh --once|--deep|--daemon|--stop|--status` — improvement
+  loop. `--deep` runs one large pass; daemon pass size via `LAPTOP_PASS_SIZE`
+  (`small` default, `medium`, `large`).
 
 ## Layout
 
@@ -39,10 +41,10 @@ Full new-machine walkthrough: `docs/new-machine-runbook.md`.
 
 ## How it improves itself
 
-`loop/loop.sh` runs one bounded agent pass per iteration: pull → check →
-agent improves one small thing → check → commit + push. No changes → back
-off (15 → 30 → 60 min, capped). Changes or failure → reset to 15 min.
-Scope rules and definition of done live in `PROMPT.md`.
+`loop/loop.sh` runs one agent pass per iteration: pull → check → agent
+improves (size via `LAPTOP_PASS_SIZE`: small/medium/large) → check → commit +
+push. No changes → back off (15 → 30 → 60 min, capped). Changes or failure →
+reset to 15 min. Scope rules and definition of done live in `PROMPT.md`.
 
 ## Related repos
 
