@@ -27,9 +27,11 @@ clone_one() {
   else
     if is_installed gh && gh auth status >/dev/null 2>&1; then
       gh repo clone "olitreadwell/$repo" "$dest" 2>/dev/null \
-        || git clone --filter=blob:none --progress "https://github.com/olitreadwell/$repo.git" "$dest" 2>/dev/null
+        || git clone --filter=blob:none --progress "https://github.com/olitreadwell/$repo.git" "$dest" 2>/dev/null \
+        || true
     else
-      git clone --filter=blob:none --progress "https://github.com/olitreadwell/$repo.git" "$dest" 2>/dev/null
+      git clone --filter=blob:none --progress "https://github.com/olitreadwell/$repo.git" "$dest" 2>/dev/null \
+        || true
     fi
     if [[ -d "$dest/.git" ]]; then
       ok "cloned: $repo"
@@ -47,5 +49,5 @@ if [[ ${#REPOS[@]} -eq 0 ]]; then
   exit 0
 fi
 
-printf '%s\n' "${REPOS[@]}" | xargs -P 4 -I{} bash -c 'clone_one "$@"' _ {}
+printf '%s\n' "${REPOS[@]}" | xargs -P 4 -I{} bash -c 'source "$LAPTOP_REPO_DIR/core/lib.sh"; clone_one "$@"' _ {}
 log "repos done: ${#REPOS[@]} in manifest, cloned or already present"
