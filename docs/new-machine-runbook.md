@@ -58,9 +58,13 @@ Then erase: shut down → hold power button → Options → Disk Utility → era
    bash ~/laptop/bootstrap.sh --yes 2>&1 | tee ~/laptop.log
    ```
    `--yes` is hands-off: interactive steps (1Password sign-in, gh/claude/
-   codex auth) are skipped with a warning, not failed. Rosetta 2 installs
-   itself on Apple Silicon (step 15). Step 45 clones your personal repos
-   from `repos.txt` into `~/code`. If a step fails, fix and resume:
+   codex auth) are skipped with a warning, not failed. Without `--yes` it
+   shows a colored plan and asks to confirm before running. Preflight
+   checks network, disk space, and power first. Output is colored on the
+   terminal, plain in `~/laptop.log`. Rosetta 2 installs itself on Apple
+   Silicon (step 15). Step 45 clones your personal repos from `repos.txt`
+   into `~/code` (parallel, partial clones). If a step fails, fix and
+   resume:
    ```sh
    bash ~/laptop/bootstrap.sh --from <step-name>
    ```
