@@ -84,13 +84,30 @@ backup_file() {
   [[ -e "$f" && ! -L "$f" ]] && cp -p "$f" "$f.bak.$(date +%s)"
 }
 
+# sed_inplace <file> <sed-expr> — edit a file in place, portable across
+# macOS/Linux. macOS sed refuses symlinks ("in-place editing only works for
+# regular files"), and dotfiles are symlinked into a shared repo, so a
+# symlink is first replaced with a machine-local regular copy.
+sed_inplace() {
+  local f="$1" expr="$2" real
+  if [[ -L "$f" ]]; then
+    real="$(readlink -f "$f")"
+    cp -p "$real" "$f.tmp.$$" && mv "$f.tmp.$$" "$f"
+    log "replaced symlink $f with a machine-local copy"
+  fi
+  if [[ "$(uname -s)" == "Darwin" ]]; then
+    sed -i '' "$expr" "$f"
+  else
+    sed -i "$expr" "$f"
+  fi
+}
+
 # fix_home_paths <file> — replace the old machine's /Users/olitreadwell
 # paths with the current $HOME (new machine may have a different username).
 fix_home_paths() {
   local f="$1"
   [[ -f "$f" ]] || return 0
-  sed -i '' "s|/Users/olitreadwell|$HOME|g" "$f" 2>/dev/null \
-    || sed -i "s|/Users/olitreadwell|$HOME|g" "$f"
+  sed_inplace "$f" "s|/Users/olitreadwell|$HOME|g"
 }
 
 # mark_done / was_done <name> — optional idempotency markers for steps that

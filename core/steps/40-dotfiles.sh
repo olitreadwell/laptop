@@ -51,8 +51,7 @@ for f in "$HOME/.zprofile" "$HOME/.zshrc"; do
   fix_home_paths "$f"
 done
 if [[ "$(uname -m)" == "arm64" ]] && [[ -f "$HOME/.zprofile" ]]; then
-  sed -i '' 's|/usr/local/bin/brew|/opt/homebrew/bin/brew|g' "$HOME/.zprofile" 2>/dev/null \
-    || sed -i 's|/usr/local/bin/brew|/opt/homebrew/bin/brew|g' "$HOME/.zprofile"
+  sed_inplace "$HOME/.zprofile" 's|/usr/local/bin/brew|/opt/homebrew/bin/brew|g' 
   log "zprofile brew path fixed for Apple Silicon"
 fi
 
