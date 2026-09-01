@@ -40,16 +40,27 @@ Then erase: shut down → hold power button → Options → Disk Utility → era
 
 4. **Run the setup**
    ```sh
-   bash ~/laptop/bootstrap.sh 2>&1 | tee ~/laptop.log
+   bash ~/laptop/bootstrap.sh --yes 2>&1 | tee ~/laptop.log
    ```
-   Interactive moments: 1Password sign-in (step 20), gh/claude auth
-   (step 80). Rosetta 2 installs itself on Apple Silicon (step 15). If a
-   step fails, fix and resume:
+   `--yes` is hands-off: interactive steps (1Password sign-in, gh/claude/
+   codex auth) are skipped with a warning, not failed. Rosetta 2 installs
+   itself on Apple Silicon (step 15). If a step fails, fix and resume:
    ```sh
    bash ~/laptop/bootstrap.sh --from <step-name>
    ```
 
-5. **Verify**
+5. **Auth batch** — do this before anything else; codex needs it to help
+   with the rest of setup.
+   ```sh
+   # 1Password: open the app, sign in, then:
+   op signin
+   # gh, claude, codex — runs each auth interactively (browser opens):
+   bash ~/laptop/core/steps/80-auth.sh
+   # verify codex is ready to help:
+   codex login status
+   ```
+
+6. **Verify**
    ```sh
    bash ~/laptop/core/steps/90-verify.sh
    ```
