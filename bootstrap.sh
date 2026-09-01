@@ -10,6 +10,7 @@
 #   bootstrap.sh --yes           non-interactive: skip prompts, warn instead
 #   bootstrap.sh --no-sudo       skip steps that need sudo
 #   bootstrap.sh --menu          force the interactive step-selection menu
+#   bootstrap.sh --verbose       live progress bar + spinner while steps run
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -31,6 +32,7 @@ ONLY_STEP=""
 ASSUME_YES=false
 NO_SUDO=false
 MENU=false
+VERBOSE=false
 
 usage() {
   sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
@@ -43,6 +45,7 @@ while [[ $# -gt 0 ]]; do
     --only)    ONLY_STEP="${2:-}"; shift 2 ;;
     --yes)     ASSUME_YES=true; shift ;;
     --menu)    MENU=true; shift ;;
+    --verbose) VERBOSE=true; shift ;;
     --no-sudo) NO_SUDO=true; shift ;;
     --help|-h) usage; exit 0 ;;
     *) fail "unknown argument: $1 (see --help)" ;;
@@ -93,6 +96,59 @@ select_steps() {
   fi
 }
 
+# progress_bar <done> <total> <label> — autosized bar, redraws in place.
+progress_bar() {
+  local done="$1" total="$2" label="$3"
+  local cols="${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}"
+  local pct=$((done * 100 / total))
+  local bar_w=$((cols - 28))
+  [[ "$bar_w" -lt 10 ]] && bar_w=10
+  local filled=$((bar_w * done / total))
+  local bar=""
+  for ((i = 0; i < filled; i++)); do bar+="█"; done
+  for ((i = filled; i < bar_w; i++)); do bar+="░"; done
+  printf '\r\033[K%s %3d%% (%d/%d) %s' "$bar" "$pct" "$done" "$total" "$label"
+}
+
+# batch_of <step> — coarse group label for the plan.
+batch_of() {
+  case "$1" in
+    1[0-9]-*|2[0-9]-*) echo "system" ;;
+    3[0-9]-*) echo "secrets" ;;
+    4[0-9]-*) echo "dotfiles+repos" ;;
+    5[0-9]-*) echo "shell+settings" ;;
+    6[0-9]-*) echo "runtimes" ;;
+    7[0-9]-*) echo "apps" ;;
+    8[0-9]-*) echo "auth" ;;
+    9[0-9]-*) echo "verify" ;;
+    *) echo "other" ;;
+  esac
+}
+
+# run_step_verbose <step> <idx> <total> — animated bar + spinner while the
+# step runs; step output scrolls above the bar.
+run_step_verbose() {
+  local step="$1" idx="$2" total="$3"
+  local step_start=$SECONDS pid rc i chars='|/-\\'
+  STEP_NAME="$step" bash "$REPO_DIR/core/steps/$step.sh" &
+  pid=$!
+  i=0
+  while kill -0 "$pid" 2>/dev/null; do
+    progress_bar "$idx" "$total" "$step ${chars:$i:1}"
+    i=$(( (i + 1) % ${#chars} ))
+    sleep 0.1
+  done
+  wait "$pid"
+  rc=$?
+  progress_bar "$((idx + 1))" "$total" "$step"
+  echo
+  if [[ "$rc" -eq 0 ]]; then
+    ok "step $step done in $((SECONDS - step_start))s"
+  else
+    fail "step $step failed — fix and re-run: bash $LAPTOP_REPO_DIR/bootstrap.sh --from $step"
+  fi
+}
+
 main() {
   mkdir -p "$LAPTOP_STATE_DIR"
   log "laptop bootstrap start (dry_run=$DRY_RUN yes=$ASSUME_YES no_sudo=$NO_SUDO)"
@@ -111,13 +167,25 @@ main() {
   print_plan
   select_steps
 
-  local step started=false step_start elapsed
+  local step started=false step_start elapsed idx=0 total=${#STEPS[@]} batch=""
   for step in "${STEPS[@]}"; do
     if [[ -n "$FROM_STEP" && "$started" == false && "$step" != "$FROM_STEP" ]]; then
       continue
     fi
     started=true
     if [[ -n "$ONLY_STEP" && "$step" != "$ONLY_STEP" ]]; then
+      continue
+    fi
+    if [[ "$VERBOSE" == true && -t 1 && "$DRY_RUN" == false ]]; then
+      local b
+      b="$(batch_of "$step")"
+      if [[ "$b" != "$batch" ]]; then
+        batch="$b"
+        echo
+        echo "${C_BOLD}${C_MAGENTA}== Batch: $batch${C_RESET}"
+      fi
+      run_step_verbose "$step" "$idx" "$total"
+      idx=$((idx + 1))
       continue
     fi
     step_header "$step"
