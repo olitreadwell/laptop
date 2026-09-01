@@ -6,6 +6,19 @@
 - Have GitHub access (gh auth will open a browser).
 - Plug in power; this takes a while.
 
+## Pre-wipe checklist (used machine)
+
+If the M1 is used, do this before erasing:
+
+- [ ] **Activation Lock off** — Settings → Apple Account → Find My → off (needs the seller's Apple ID password).
+- [ ] **Seller signs out** of iCloud, iMessage, and App Store (Settings → Apple Account → Sign Out).
+- [ ] **FileVault password** known (or disable FileVault before erase).
+- [ ] **Firmware password** off or known — otherwise the erase may be blocked.
+- [ ] **Battery health check** — System Settings → Battery → Battery Health, or `system_profiler SPPowerDataType`.
+- [ ] **Already factory-reset?** (setup screen shows, no Activation Lock) → skip the erase step.
+
+Then erase: shut down → hold power button → Options → Disk Utility → erase the internal disk → Reinstall macOS.
+
 ## Steps
 
 1. **Xcode Command Line Tools**
