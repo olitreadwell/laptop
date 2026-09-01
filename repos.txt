@@ -25,5 +25,4 @@ new-zealand-data
 pr-vetting
 cooking
 interview-prep
-oli
-career
+# oli + career live in iCloud Drive — they sync automatically, no clone.
