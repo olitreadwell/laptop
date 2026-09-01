@@ -1,5 +1,4 @@
 tap "espanso/espanso", trusted: true
-tap "ferdium/ferdium", trusted: true
 tap "hashicorp/tap"
 tap "stablyai/orca"
 # Cryptography and SSL/TLS Toolkit
@@ -15,7 +14,6 @@ brew "awscli"
 # Microsoft Azure CLI 2.0
 brew "azure-cli"
 # Toolchain of the web
-brew "biome"
 # Core application library for C
 brew "glib"
 # Container runtimes on MacOS (and Linux) with minimal setup
@@ -59,8 +57,6 @@ brew "ripgrep"
 # Go and Rust toolchains
 brew "go"
 brew "rust"
-# Text editor
-brew "emacs"
 # Run a Kubernetes cluster locally
 brew "minikube"
 # MongoDB Shell to connect, configure, query, and work with your MongoDB database
@@ -90,7 +86,6 @@ brew "watchman"
 # C++ search engine library
 brew "xapian"
 # JavaScript package manager
-brew "yarn"
 # Terraform
 brew "hashicorp/tap/terraform", trusted: true
 # Password manager that keeps all passwords secure behind one password
