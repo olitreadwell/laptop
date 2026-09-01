@@ -30,17 +30,13 @@
    bash ~/laptop/bootstrap.sh 2>&1 | tee ~/laptop.log
    ```
    Interactive moments: 1Password sign-in (step 20), gh/claude auth
-   (step 80). If a step fails, fix and resume:
+   (step 80). Rosetta 2 installs itself on Apple Silicon (step 15). If a
+   step fails, fix and resume:
    ```sh
    bash ~/laptop/bootstrap.sh --from <step-name>
    ```
 
-5. **Rosetta 2** (Apple Silicon only, if not already installed)
-   ```sh
-   softwareupdate --install-rosetta --agree-to-license
-   ```
-
-6. **Verify**
+5. **Verify**
    ```sh
    bash ~/laptop/core/steps/90-verify.sh
    ```

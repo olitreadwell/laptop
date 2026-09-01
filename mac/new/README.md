@@ -11,8 +11,8 @@ Next provisioning target. Apple Silicon changes several assumptions.
 
 - Homebrew installs to `/opt/homebrew`; PATH must include it (step
   `30-homebrew.sh` handles this).
-- Rosetta 2 needed for x86-only tools: `softwareupdate --install-rosetta
-  --agree-to-license`. Install early, it's cheap.
+- Rosetta 2 needed for x86-only tools: installed by `15-rosetta-arm64.sh`
+  (`softwareupdate --install-rosetta --agree-to-license`) before brew bundle.
 - arm64 bottles for most formulae; some tools still x86-only — detect and
   warn, don't fail.
 - `uname -m` returns `arm64`; `core/detect.sh` reports `chip=apple-silicon`.
