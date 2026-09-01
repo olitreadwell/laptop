@@ -32,8 +32,11 @@ else
   open -a 1Password 2>/dev/null || true
   local waited=0
   while ! op account list >/dev/null 2>&1; do
+    # Establish the CLI session via the app (works once the GUI is
+    # unlocked; stdin from /dev/null so it never blocks on a prompt).
+    ( op signin --account my.1password.com </dev/null >/dev/null 2>&1 & )
     if [[ "$waited" -ge 180 ]]; then
-      warn "1Password not signed in after 3 min — sign in, then re-run:"
+      warn "1Password CLI not ready after 3 min — sign in, then re-run:"
       warn "bash $LAPTOP_REPO_DIR/bootstrap.sh --from 30-1password"
       break
     fi
