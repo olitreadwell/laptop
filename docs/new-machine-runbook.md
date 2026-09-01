@@ -19,6 +19,20 @@ If the M1 is used, do this before erasing:
 
 Then erase: shut down → hold power button → Options → Disk Utility → erase the internal disk → Reinstall macOS.
 
+## Fastest start (one command)
+
+After Wi-Fi + account setup, run this at first login — it installs Xcode
+CLT, clones this repo, and runs the hands-off bootstrap. A LaunchAgent
+resumes automatically after a reboot mid-setup, and disables itself when
+done:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/olitreadwell/laptop/main/bootstrap-first-boot.sh | bash
+```
+
+Watch progress: `tail -f ~/laptop-first-boot.log`. Then do the auth batch
+(step 7 below).
+
 ## Steps
 
 1. **Connect to Wi-Fi** — needed before anything else. The setup assistant
