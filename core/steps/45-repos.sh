@@ -13,10 +13,8 @@ fi
 
 mkdir -p "$HOME/code"
 
-# Wire git to gh's credential helper so private clones never prompt.
-if is_installed gh && gh auth status >/dev/null 2>&1; then
-  gh auth setup-git 2>/dev/null || true
-fi
+# clone_one uses gh's own auth when available so private clones never
+# prompt for a password.
 
 clone_one() {
   local repo="$1" dest="$HOME/code/$repo"
@@ -27,7 +25,13 @@ clone_one() {
   elif [[ -d "$dest" ]]; then
     warn "repo dir exists but not a git repo — skipping: $repo"
   else
-    if git clone --filter=blob:none --progress "https://github.com/olitreadwell/$repo.git" "$dest" 2>/dev/null; then
+    if is_installed gh && gh auth status >/dev/null 2>&1; then
+      gh repo clone "olitreadwell/$repo" "$dest" 2>/dev/null \
+        || git clone --filter=blob:none --progress "https://github.com/olitreadwell/$repo.git" "$dest" 2>/dev/null
+    else
+      git clone --filter=blob:none --progress "https://github.com/olitreadwell/$repo.git" "$dest" 2>/dev/null
+    fi
+    if [[ -d "$dest/.git" ]]; then
       ok "cloned: $repo"
     else
       warn "clone failed (offline or missing): $repo"
