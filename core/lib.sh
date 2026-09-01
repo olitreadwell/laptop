@@ -10,16 +10,54 @@ export STEP_NAME="${STEP_NAME:-unknown}"
 
 mkdir -p "$LAPTOP_STATE_DIR"
 
-log()  { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "$LAPTOP_LOG_FILE"; }
-warn() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] WARN: $*" | tee -a "$LAPTOP_LOG_FILE" >&2; }
-fail() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $*" | tee -a "$LAPTOP_LOG_FILE" >&2; exit 1; }
+# ANSI colors — only when stdout is a TTY; log file stays plain.
+if [[ -t 1 ]]; then
+  C_RESET=$'\033[0m'; C_BOLD=$'\033[1m'; C_DIM=$'\033[2m'
+  C_RED=$'\033[31m'; C_GREEN=$'\033[32m'; C_YELLOW=$'\033[33m'
+  C_BLUE=$'\033[34m'; C_MAGENTA=$'\033[35m'; C_CYAN=$'\033[36m'
+else
+  C_RESET=; C_BOLD=; C_DIM=; C_RED=; C_GREEN=; C_YELLOW=; C_BLUE=; C_MAGENTA=; C_CYAN=
+fi
+
+# log <msg> — plain INFO line; colored on TTY, plain in log file.
+log() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LAPTOP_LOG_FILE"
+  echo "${C_DIM}[$(date '+%H:%M:%S')]${C_RESET} ${C_BLUE}INFO${C_RESET}  $*"
+}
+
+# ok <msg> — success line (green).
+ok() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] OK: $*" >> "$LAPTOP_LOG_FILE"
+  echo "${C_DIM}[$(date '+%H:%M:%S')]${C_RESET} ${C_GREEN}OK${C_RESET}     $*"
+}
+
+# warn <msg> — warning line (yellow), stderr.
+warn() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] WARN: $*" >> "$LAPTOP_LOG_FILE"
+  echo "${C_DIM}[$(date '+%H:%M:%S')]${C_RESET} ${C_YELLOW}WARN${C_RESET}   $*" >&2
+}
+
+# fail <msg> — error line (red), stderr, exit 1.
+fail() {
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: $*" >> "$LAPTOP_LOG_FILE"
+  echo "${C_DIM}[$(date '+%H:%M:%S')]${C_RESET} ${C_RED}ERROR${C_RESET}  $*" >&2
+  exit 1
+}
+
+# step_header <name> — big banner before a step runs.
+step_header() {
+  local name="$1"
+  echo
+  echo "${C_BOLD}${C_CYAN}==> $name${C_RESET}"
+  echo "[$(date '+%Y-%m-%d %H:%M:%S')] ==> step: $name" >> "$LAPTOP_LOG_FILE"
+}
 
 # run_cmd <label> <cmd...> — run, log, hard-fail on error
 run_cmd() {
   local label="$1"; shift
   log "step $STEP_NAME: $label"
   if "$@"; then
-    log "step $STEP_NAME: ok: $label"
+    ok "step $STEP_NAME: $label"
   else
     fail "step $STEP_NAME: failed: $label"
   fi
@@ -31,7 +69,7 @@ run_cmd_soft() {
   local label="$1"; shift
   log "step $STEP_NAME: $label"
   if "$@"; then
-    log "step $STEP_NAME: ok: $label"
+    ok "step $STEP_NAME: $label"
   else
     warn "step $STEP_NAME: failed (continuing): $label — resume: $*"
   fi
