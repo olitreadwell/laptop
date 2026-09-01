@@ -70,6 +70,7 @@ laptop/
 ├── AGENTS.md              # conventions for agents working in this repo
 ├── bootstrap.sh           # provision entry point: detect → plan → run → verify
 ├── Brewfile               # current machine's Homebrew manifest (seed, curated)
+├── repos.txt              # personal repos cloned into ~/code (step 45)
 ├── Makefile               # check / test / snapshot targets
 ├── core/
 │   ├── lib.sh             # logging, error handling, idempotency helpers
@@ -80,6 +81,7 @@ laptop/
 │       ├── 20-1password.sh# 1Password app + CLI + SSH agent
 │       ├── 30-homebrew.sh # Homebrew + brew bundle
 │       ├── 40-dotfiles.sh # dotfiles + ai-harness
+│       ├── 45-repos.sh    # clone personal repos from repos.txt
 │       ├── 50-shell.sh    # zsh, oh-my-zsh, starship, fzf, zoxide
 │       ├── 60-runtimes.sh # mise + node/python/ruby/bun
 │       ├── 70-apps.sh     # App Store (mas) + app-level extras
