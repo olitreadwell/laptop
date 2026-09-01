@@ -81,7 +81,9 @@ is_installed() { command -v "$1" >/dev/null 2>&1; }
 # backup_file <path> — timestamped .bak copy before any overwrite
 backup_file() {
   local f="$1"
-  [[ -e "$f" && ! -L "$f" ]] && cp -p "$f" "$f.bak.$(date +%s)"
+  if [[ -e "$f" && ! -L "$f" ]]; then
+    cp -p "$f" "$f.bak.$(date +%s)"
+  fi
 }
 
 # sed_inplace <file> <sed-expr> — edit a file in place, portable across
