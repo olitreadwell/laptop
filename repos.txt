@@ -1,5 +1,7 @@
 # Personal repos cloned into ~/code by step 45-repos.sh.
 # One repo name per line; # starts a comment. Add new repos here.
+# OSS forks (react-spectrum, aws-cdk, uswds, etc.) deliberately excluded —
+# contribution work, not needed on the new machine.
 kiwi-djs
 dashboards
 wellington-run-clubs
