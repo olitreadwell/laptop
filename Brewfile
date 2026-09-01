@@ -49,7 +49,6 @@ brew "jq"
 # Kubernetes command-line interface
 brew "kubernetes-cli"
 # Keep your Mac's application settings in sync
-brew "mackup"
 # Mac App Store command-line interface
 brew "mas"
 # Fast file search (rg)
@@ -104,7 +103,6 @@ cask "claude-code"
 # Agentic IDE with AI agent command center
 cask "devin-desktop"
 # Voice and text chat software
-cask "discord"
 # Developer platform
 cask "dotnet-sdk"
 # Cross-platform Text Expander written in Rust
