@@ -81,6 +81,7 @@ laptop/
 │       ├── 20-homebrew.sh # Homebrew + brew bundle + gum TUI
 │       ├── 30-1password.sh# 1Password app + CLI + SSH agent
 │       ├── 40-dotfiles.sh # dotfiles + ai-harness
+│       ├── 42-codex-config.sh # codex model catalog
 │       ├── 45-repos.sh    # clone personal repos from repos.txt
 │       ├── 50-shell.sh    # zsh, oh-my-zsh, starship, fzf, zoxide
 │       ├── 60-runtimes.sh # mise + node/python/ruby/bun
