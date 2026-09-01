@@ -96,7 +96,6 @@ cask "airflow"
 # Web browser focusing on privacy
 cask "brave-browser"
 # Bittorrent client
-cask "c0re100-qbittorrent"
 # Anthropic's official Claude AI desktop app
 cask "claude"
 # Terminal-based AI coding assistant
@@ -144,7 +143,6 @@ cask "hammerspoon"
 cask "lulu"
 cask "tailscale-app"
 # Utilities
-cask "dupeguru"
 cask "pearcleaner"
 mas "1Password for Safari", id: 1569813296
 mas "Adblock Plus", id: 1432731683

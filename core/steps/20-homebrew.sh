@@ -19,6 +19,11 @@ if ! is_installed gum; then
   run_cmd_soft "install gum" brew install gum
 fi
 
+# mise is needed by brew bundle's npm section (reshim) — install first.
+if ! is_installed mise; then
+  run_cmd_soft "install mise" brew install mise
+fi
+
 if [[ -f "$LAPTOP_REPO_DIR/Brewfile" ]]; then
   run_cmd_soft "brew bundle" brew bundle --verbose --file="$LAPTOP_REPO_DIR/Brewfile"
 else
