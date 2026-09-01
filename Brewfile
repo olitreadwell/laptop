@@ -141,7 +141,6 @@ cask "stats"
 # Native desktop client for WhatsApp
 cask "whatsapp@beta"
 # Video communication and virtual meeting platform
-cask "zoom"
 # Window automation, firewall, VPN
 cask "hammerspoon"
 cask "lulu"
