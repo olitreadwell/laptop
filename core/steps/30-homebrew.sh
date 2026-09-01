@@ -15,7 +15,7 @@ else
 fi
 
 if [[ -f "$LAPTOP_REPO_DIR/Brewfile" ]]; then
-  run_cmd "brew bundle" brew bundle --file="$LAPTOP_REPO_DIR/Brewfile"
+  run_cmd_soft "brew bundle" brew bundle --file="$LAPTOP_REPO_DIR/Brewfile"
 else
   log "no Brewfile — skipping brew bundle"
 fi

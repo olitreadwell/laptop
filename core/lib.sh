@@ -25,6 +25,18 @@ run_cmd() {
   fi
 }
 
+# run_cmd_soft <label> <cmd...> — run, log, warn (not fail) on error.
+# For steps where one bad item must not block the rest of the bootstrap.
+run_cmd_soft() {
+  local label="$1"; shift
+  log "step $STEP_NAME: $label"
+  if "$@"; then
+    log "step $STEP_NAME: ok: $label"
+  else
+    warn "step $STEP_NAME: failed (continuing): $label — resume: $*"
+  fi
+}
+
 # is_installed <cmd> — true if command exists on PATH
 is_installed() { command -v "$1" >/dev/null 2>&1; }
 
