@@ -123,6 +123,18 @@ Watch progress: `tail -f ~/laptop-first-boot.log`. Then do the auth batch
    bash ~/laptop/loop/loop.sh --daemon
    ```
 
+## Manual apps (Homebrew-disabled, still used)
+
+qBittorrent and dupeGuru casks were disabled by Homebrew (not notarized for
+Gatekeeper). Install manually, then clear the quarantine flag once:
+
+```sh
+# qBittorrent: https://www.qbittorrent.org/download
+# dupeGuru: https://dupeguru.voltaicideas.net/
+xattr -dr com.apple.quarantine /Applications/qBittorrent.app
+xattr -dr com.apple.quarantine /Applications/dupeGuru.app
+```
+
 ## If something breaks
 
 - Read `~/laptop.log` — every step logs start/end.
