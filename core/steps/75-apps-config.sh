@@ -30,7 +30,8 @@ fi
 
 # 2. Login items (idempotent).
 add_login_item() {
-  local app="$1" path="/Applications/$app.app"
+  local app="$1"
+  local path="/Applications/$app.app"
   [[ -d "$path" ]] || { log "not installed, skipping login item: $app"; return 0; }
   if osascript -e "tell application \"System Events\" to exists login item \"$app\"" 2>/dev/null | grep -qi true; then
     log "login item present: $app"

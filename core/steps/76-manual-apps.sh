@@ -8,7 +8,8 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
 [[ "$(uname -s)" == "Darwin" ]] || { log "not macOS — skipping"; exit 0; }
 
 install_dmg_app() {
-  local name="$1" url="$2" dmg="/tmp/$name.dmg"
+  local name="$1" url="$2"
+  local dmg="/tmp/$name.dmg"
   if [[ -d "/Applications/$name.app" ]]; then
     log "$name already installed"
     return 0
@@ -32,7 +33,8 @@ install_dmg_app() {
 }
 
 install_zip_app() {
-  local name="$1" url="$2" zip="/tmp/$name.zip"
+  local name="$1" url="$2"
+  local zip="/tmp/$name.zip"
   if [[ -d "/Applications/$name.app" ]]; then
     log "$name already installed"
     return 0
