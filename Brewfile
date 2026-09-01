@@ -142,8 +142,6 @@ cask "stats"
 cask "whatsapp@beta"
 # Video communication and virtual meeting platform
 cask "zoom"
-# Terminal emulator
-cask "ghostty"
 # Window automation, firewall, VPN
 cask "hammerspoon"
 cask "lulu"
