@@ -86,6 +86,7 @@ laptop/
 │       ├── 50-shell.sh    # zsh, oh-my-zsh, starship, fzf, zoxide
 │       ├── 60-runtimes.sh # mise + node/python/ruby/bun
 │       ├── 70-apps.sh     # App Store (mas) + app-level extras
+│       ├── 75-apps-config.sh # prefs, login items, open apps, sign-ins
 │       ├── 80-auth.sh     # gh / claude / codex auth
 │       └── 90-verify.sh   # final checks + report
 ├── loop/

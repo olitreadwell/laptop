@@ -79,7 +79,9 @@ Watch progress: `tail -f ~/laptop-first-boot.log`. Then do the auth batch
    installed (step 20 installs it), ANSI per-item progress panel otherwise.
    Full step output streams on screen and lands in `~/laptop.log`. Add
    `--parallel` to run independent steps concurrently (1Password wait
-   overlaps dotfiles/repos/settings). Preflight
+   overlaps dotfiles/repos/settings). Step 75 restores app prefs, sets
+   login items, opens new apps for first-run, and prompts for sign-ins.
+   Preflight
    checks network, disk space, and power first. Output is colored on the
    terminal, plain in `~/laptop.log`. Rosetta 2 installs itself on Apple
    Silicon (step 15). Step 45 clones your personal repos from `repos.txt`
@@ -116,7 +118,7 @@ Watch progress: `tail -f ~/laptop-first-boot.log`. Then do the auth batch
    mise upgrade
    ```
 
-10. **Start the improvement loop** (optional, once the machine is daily-driver)
+11. **Start the improvement loop** (optional, once the machine is daily-driver)
    ```sh
    bash ~/laptop/loop/loop.sh --daemon
    ```
