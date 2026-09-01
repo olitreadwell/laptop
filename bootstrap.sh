@@ -11,6 +11,7 @@
 #   bootstrap.sh --no-sudo       skip steps that need sudo
 #   bootstrap.sh --menu          force the interactive step-selection menu
 #   bootstrap.sh --verbose       live progress bar + spinner while steps run
+#   bootstrap.sh --parallel      run independent steps concurrently (waves)
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -33,6 +34,7 @@ ASSUME_YES=false
 NO_SUDO=false
 MENU=false
 VERBOSE=false
+PARALLEL=false
 
 usage() {
   sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
@@ -46,6 +48,7 @@ while [[ $# -gt 0 ]]; do
     --yes)     ASSUME_YES=true; shift ;;
     --menu)    MENU=true; shift ;;
     --verbose) VERBOSE=true; shift ;;
+    --parallel) PARALLEL=true; shift ;;
     --no-sudo) NO_SUDO=true; shift ;;
     --help|-h) usage; exit 0 ;;
     *) fail "unknown argument: $1 (see --help)" ;;
@@ -274,6 +277,76 @@ run_step_verbose() {
   fi
 }
 
+# wave_of <step> — parallel scheduling. Same wave = safe to run
+# concurrently (no shared state). Renaming a step must update this map.
+wave_of() {
+  case "$1" in
+    10-*|15-*|20-*) echo 0 ;;
+    30-*|40-*|45-*|55-*) echo 1 ;;
+    50-*|60-*|70-*) echo 2 ;;
+    80-*) echo 3 ;;
+    90-*) echo 4 ;;
+    *) echo 0 ;;
+  esac
+}
+
+# run_wave <steps...> — run a wave's steps concurrently, output to temp
+# files, replay each as it finishes. Returns non-zero if any step failed.
+run_wave() {
+  local -a steps=("$@")
+  local -a pids=() tmps=()
+  local step tmp pid rc=0 i=0
+  for step in "${steps[@]}"; do
+    tmp="$(mktemp)"
+    tmps+=("$tmp")
+    step_header "$step"
+    STEP_NAME="$step" bash "$REPO_DIR/core/steps/$step.sh" >"$tmp" 2>&1 &
+    pids+=($!)
+  done
+  for pid in "${pids[@]}"; do
+    if wait "$pid"; then
+      ok "step ${steps[$i]} done"
+    else
+      warn "step ${steps[$i]} failed:"
+      cat "${tmps[$i]}"
+      rc=1
+    fi
+    rm "${tmps[$i]}"
+    i=$((i + 1))
+  done
+  return "$rc"
+}
+
+# run_parallel — sequential waves, concurrent within a wave.
+run_parallel() {
+  local -a todo=() wave_steps=()
+  local step started=false wave prev_wave=-1
+  for step in "${STEPS[@]}"; do
+    if [[ -n "$FROM_STEP" && "$started" == false && "$step" != "$FROM_STEP" ]]; then
+      continue
+    fi
+    started=true
+    if [[ -n "$ONLY_STEP" && "$step" != "$ONLY_STEP" ]]; then
+      continue
+    fi
+    todo+=("$step")
+  done
+  for step in "${todo[@]}"; do
+    wave="$(wave_of "$step")"
+    if [[ "$wave" != "$prev_wave" && ${#wave_steps[@]} -gt 0 ]]; then
+      run_wave "${wave_steps[@]}" \
+        || fail "wave $prev_wave failed — resume: bash $LAPTOP_REPO_DIR/bootstrap.sh --from ${wave_steps[0]}"
+      wave_steps=()
+    fi
+    wave_steps+=("$step")
+    prev_wave="$wave"
+  done
+  if [[ ${#wave_steps[@]} -gt 0 ]]; then
+    run_wave "${wave_steps[@]}" \
+      || fail "wave $prev_wave failed — resume: bash $LAPTOP_REPO_DIR/bootstrap.sh --from ${wave_steps[0]}"
+  fi
+}
+
 main() {
   mkdir -p "$LAPTOP_STATE_DIR"
   log "laptop bootstrap start (dry_run=$DRY_RUN yes=$ASSUME_YES no_sudo=$NO_SUDO)"
@@ -291,6 +364,17 @@ main() {
   preflight
   print_plan
   select_steps
+
+  if [[ "$PARALLEL" == true && "$DRY_RUN" == false ]]; then
+    run_parallel
+    echo
+    echo "${C_BOLD}${C_GREEN}==> bootstrap complete${C_RESET}"
+    echo "  log: $LAPTOP_LOG_FILE"
+    echo "  next: 1Password sign-in, then: bash $LAPTOP_REPO_DIR/core/steps/80-auth.sh"
+    echo "  then: bash $LAPTOP_REPO_DIR/core/steps/90-verify.sh"
+    log "laptop bootstrap complete"
+    return 0
+  fi
 
   local step started=false step_start elapsed idx=0 total=${#STEPS[@]} batch=""
   for step in "${STEPS[@]}"; do

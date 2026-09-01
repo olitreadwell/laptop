@@ -27,6 +27,8 @@ Full new-machine walkthrough: `docs/new-machine-runbook.md`.
   headers when gum is installed, ANSI per-item panel otherwise.
 - `bash bootstrap.sh --menu` — interactive step-selection menu.
 - `bash bootstrap.sh --only <step>` — run a single step.
+- `bash bootstrap.sh --parallel` — run independent steps concurrently
+  (waves: 1Password/dotfiles/repos/settings, then shell/runtimes/apps).
 - `make check` — syntax + detect + plan + shellcheck tests.
 - `make snapshot` — regenerate `knowledge/current-machine.md` +
   `knowledge/tool-inventory.md` from this machine.
