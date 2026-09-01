@@ -26,5 +26,21 @@ fi
 if op account list >/dev/null 2>&1; then
   log "1Password signed in"
 else
-  warn "1Password not signed in — open the app, sign in, then run: op signin"
+  log "opening 1Password — sign in once with your master password, then"
+  log "enable Touch ID (Settings → Security → Touch ID) so the CLI unlocks"
+  log "with your fingerprint from here on"
+  open -a 1Password 2>/dev/null || true
+  local waited=0
+  while ! op account list >/dev/null 2>&1; do
+    if [[ "$waited" -ge 180 ]]; then
+      warn "1Password not signed in after 3 min — sign in, then re-run:"
+      warn "bash $LAPTOP_REPO_DIR/bootstrap.sh --from 20-1password"
+      break
+    fi
+    sleep 5
+    waited=$((waited + 5))
+  done
+  if op account list >/dev/null 2>&1; then
+    ok "1Password signed in — Touch ID unlock ready"
+  fi
 fi

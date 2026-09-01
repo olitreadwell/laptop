@@ -88,3 +88,17 @@ backup_file() {
 # cannot detect their own completion from system state
 mark_done() { : > "$LAPTOP_STATE_DIR/$1"; }
 was_done() { [[ -f "$LAPTOP_STATE_DIR/$1" ]]; }
+
+# op_read <item> <field> — read a secret from 1Password (default field
+# credential). Empty + warn when 1Password is not signed in or the item is
+# missing, so callers can fall back gracefully.
+op_read() {
+  local item="$1" field="${2:-credential}"
+  if op account list >/dev/null 2>&1; then
+    op item get "$item" --fields "$field" --reveal 2>/dev/null \
+      || { warn "1Password read failed: $item/$field"; echo ""; }
+  else
+    warn "1Password not signed in — cannot read $item"
+    echo ""
+  fi
+}

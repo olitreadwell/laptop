@@ -83,17 +83,19 @@ Watch progress: `tail -f ~/laptop-first-boot.log`. Then do the auth batch
    bash ~/laptop/bootstrap.sh --from <step-name>
    ```
 
-7. **Auth batch** — do this before anything else; codex needs it to help
-   with the rest of setup.
+7. **1Password + auth batch** — enter your master password once; everything
+   else flows through Touch ID + the 1Password CLI.
    ```sh
-   # 1Password: open the app, sign in, then:
-   op signin
+   # Step 20 already opened 1Password and waited for sign-in. If not done:
+   open -a 1Password   # sign in once, enable Touch ID (Settings → Security)
    # gh, claude, codex auth + Ollama Cloud Pro keys 1+2 from 1Password
-   # (written to ~/.config/op/secrets.env so codex works immediately):
+   # (keys written to ~/.config/op/secrets.env so codex works immediately):
    bash ~/laptop/core/steps/80-auth.sh
    # verify codex is ready to help:
    codex login status
    ```
+   Optional: point gh at a 1Password PAT item for token-based auth:
+   `LAPTOP_GH_TOKEN_ITEM="GitHub PAT" bash ~/laptop/core/steps/80-auth.sh`
 
 8. **Verify**
    ```sh
