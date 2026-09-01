@@ -7,6 +7,12 @@
 #   curl -fsSL https://raw.githubusercontent.com/olitreadwell/laptop/main/bootstrap-first-boot.sh | bash
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$SCRIPT_DIR"
+if [[ ! -d "$REPO_DIR/.git" ]]; then
+  REPO_DIR="$HOME/laptop"
+fi
+
 LOG="$HOME/laptop-first-boot.log"
 # Show output on the terminal AND log it (tee), so the kickoff is not silent.
 exec > >(tee -a "$LOG") 2>&1
@@ -23,7 +29,7 @@ install_launch_agent() {
 <dict>
   <key>Label</key><string>com.olitreadwell.laptop-bootstrap</string>
   <key>ProgramArguments</key>
-  <array><string>/bin/bash</string><string>$HOME/laptop/bootstrap-first-boot.sh</string></array>
+  <array><string>/bin/bash</string><string>$REPO_DIR/bootstrap-first-boot.sh</string></array>
   <key>RunAtLoad</key><true/>
   <key>StandardOutPath</key><string>$LOG</string>
   <key>StandardErrorPath</key><string>$LOG</string>
@@ -57,16 +63,16 @@ if ! xcode-select -p >/dev/null 2>&1; then
 fi
 
 # 2. Clone (or refresh) this repo.
-if [[ ! -d "$HOME/laptop/.git" ]]; then
-  git clone https://github.com/olitreadwell/laptop.git "$HOME/laptop"
+if [[ ! -d "$REPO_DIR/.git" ]]; then
+  git clone https://github.com/olitreadwell/laptop.git "$REPO_DIR"
 else
-  git -C "$HOME/laptop" pull --ff-only origin main 2>/dev/null || true
+  git -C "$REPO_DIR" pull --ff-only origin main 2>/dev/null || true
 fi
 
 # 3. Hands-off bootstrap. Hard failure keeps the launch agent → retry at
 #    next login; steps are idempotent so re-runs converge.
 install_launch_agent
-if bash "$HOME/laptop/bootstrap.sh" --yes; then
+if bash "$REPO_DIR/bootstrap.sh" --yes; then
   disable_launch_agent
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] first-boot bootstrap complete"
 else
