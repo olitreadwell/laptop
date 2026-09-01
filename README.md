@@ -23,6 +23,10 @@ Full new-machine walkthrough: `docs/new-machine-runbook.md`.
 - `bash bootstrap.sh` — provision this machine (idempotent, safe to re-run).
 - `bash bootstrap.sh --from <step>` — resume from a failed step.
 - `bash bootstrap.sh --yes` — non-interactive (skips prompts with warnings).
+- `bash bootstrap.sh --verbose` — live progress: gum spinner + styled
+  headers when gum is installed, ANSI per-item panel otherwise.
+- `bash bootstrap.sh --menu` — interactive step-selection menu.
+- `bash bootstrap.sh --only <step>` — run a single step.
 - `make check` — syntax + detect + plan + shellcheck tests.
 - `make snapshot` — regenerate `knowledge/current-machine.md` +
   `knowledge/tool-inventory.md` from this machine.

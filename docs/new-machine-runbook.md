@@ -24,7 +24,8 @@ Then erase: shut down → hold power button → Options → Disk Utility → era
 After Wi-Fi + account setup, run this at first login — it installs Xcode
 CLT, clones this repo, and runs the hands-off bootstrap. A LaunchAgent
 resumes automatically after a reboot mid-setup, and disables itself when
-done:
+done. Works from any location: if you cloned the repo yourself, run
+`bash <path>/bootstrap-first-boot.sh` from inside it instead:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/olitreadwell/laptop/main/bootstrap-first-boot.sh | bash
@@ -74,8 +75,9 @@ Watch progress: `tail -f ~/laptop-first-boot.log`. Then do the auth batch
    `--yes` is hands-off: interactive steps (1Password sign-in, gh/claude/
    codex auth) are skipped with a warning, not failed. Without `--yes` it
    shows a colored plan and asks to confirm before running. Add
-   `--verbose` for a full-screen panel: overall progress bar + one mini
-   progress bar per item being downloaded/installed, live. Preflight
+   `--verbose` for live progress: gum spinner + styled headers when gum is
+   installed (step 20 installs it), ANSI per-item progress panel otherwise.
+   Preflight
    checks network, disk space, and power first. Output is colored on the
    terminal, plain in `~/laptop.log`. Rosetta 2 installs itself on Apple
    Silicon (step 15). Step 45 clones your personal repos from `repos.txt`

@@ -78,7 +78,7 @@ laptop/
 │   ├── plan.sh            # ordered step list for this machine
 │   └── steps/             # one idempotent step per file, numbered
 │       ├── 10-prereqs.sh  # Xcode CLT, sudo
-│       ├── 20-homebrew.sh # Homebrew + brew bundle
+│       ├── 20-homebrew.sh # Homebrew + brew bundle + gum TUI
 │       ├── 30-1password.sh# 1Password app + CLI + SSH agent
 │       ├── 40-dotfiles.sh # dotfiles + ai-harness
 │       ├── 45-repos.sh    # clone personal repos from repos.txt
