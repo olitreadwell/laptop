@@ -134,7 +134,6 @@ cask "rectangle"
 # Music streaming service
 cask "spotify"
 # System monitor for the menu bar
-cask "stats"
 # Native desktop client for WhatsApp
 cask "whatsapp@beta"
 # Video communication and virtual meeting platform
