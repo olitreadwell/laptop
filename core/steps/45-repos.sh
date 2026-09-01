@@ -17,7 +17,8 @@ mkdir -p "$HOME/code"
 # prompt for a password.
 
 clone_one() {
-  local repo="$1" dest="$HOME/code/$repo"
+  local repo="$1"
+  local dest="$HOME/code/$repo"
   if [[ -d "$dest/.git" ]]; then
     git -C "$dest" pull --ff-only origin main 2>/dev/null \
       && log "repo up to date: $repo" \
@@ -43,7 +44,11 @@ clone_one() {
 export -f clone_one
 export HOME
 
-mapfile -t REPOS < <(grep -vE '^\s*(#|$)' "$MANIFEST")
+REPOS=()
+while IFS= read -r line; do
+  [[ "$line" =~ ^[[:space:]]*(#|$) ]] && continue
+  REPOS+=("$line")
+done < "$MANIFEST"
 if [[ ${#REPOS[@]} -eq 0 ]]; then
   log "repos.txt empty — nothing to clone"
   exit 0
