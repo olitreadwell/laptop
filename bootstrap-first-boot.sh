@@ -8,8 +8,9 @@
 set -euo pipefail
 
 LOG="$HOME/laptop-first-boot.log"
-exec >>"$LOG" 2>&1
-echo "[$(date '+%Y-%m-%d %H:%M:%S')] first-boot bootstrap start"
+# Show output on the terminal AND log it (tee), so the kickoff is not silent.
+exec > >(tee -a "$LOG") 2>&1
+echo "[$(date '+%Y-%m-%d %H:%M:%S')] first-boot bootstrap start — log: $LOG"
 
 PLIST="$HOME/Library/LaunchAgents/com.olitreadwell.laptop-bootstrap.plist"
 
