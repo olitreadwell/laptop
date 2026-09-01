@@ -12,6 +12,7 @@
 #   bootstrap.sh --menu          force the interactive step-selection menu
 #   bootstrap.sh --verbose       live progress bar + spinner while steps run
 #   bootstrap.sh --parallel      run independent steps concurrently (waves)
+#   bootstrap.sh --diagnostics   print system/tool/auth report and exit
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -35,6 +36,7 @@ NO_SUDO=false
 MENU=false
 VERBOSE=false
 PARALLEL=false
+DIAGNOSTICS=false
 
 usage() {
   sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
@@ -49,6 +51,7 @@ while [[ $# -gt 0 ]]; do
     --menu)    MENU=true; shift ;;
     --verbose) VERBOSE=true; shift ;;
     --parallel) PARALLEL=true; shift ;;
+    --diagnostics) DIAGNOSTICS=true; shift ;;
     --no-sudo) NO_SUDO=true; shift ;;
     --help|-h) usage; exit 0 ;;
     *) fail "unknown argument: $1 (see --help)" ;;
@@ -56,6 +59,62 @@ while [[ $# -gt 0 ]]; do
 done
 
 export ASSUME_YES NO_SUDO
+
+# diagnostics — system, installed tools + versions, auth status.
+diagnostics() {
+  local t v
+  echo
+  if has_gum; then
+    gum style --border double --padding "0 2" --foreground 212 "System diagnostics"
+  else
+    echo "${C_BOLD}${C_MAGENTA}System diagnostics${C_RESET}"
+  fi
+  echo "  macOS: $macos_version ($chip, $model)"
+  echo "  RAM: $(sysctl -n hw.memsize 2>/dev/null | awk '{printf "%.0f GB", $1/1024/1024/1024}')"
+  echo "  Disk free: $(df -k "$HOME" | awk 'NR==2 {printf "%.1f GB", $4/1024/1024}')"
+  echo "  Power: $(pmset -g batt 2>/dev/null | grep -Eo 'AC Power|Battery Power' | head -1 || echo unknown)"
+  echo "  Network: $(curl -fsS --max-time 5 -o /dev/null -w '%{http_code}' https://github.com 2>/dev/null || echo down)"
+  echo
+  echo "  ${C_BOLD}Tools:${C_RESET}"
+  for t in brew git gh op mise codex claude zsh starship fzf zoxide docker mas; do
+    if is_installed "$t"; then
+      v="$("$t" --version 2>/dev/null | head -1 || true)"
+      case "$v" in Usage:*|Error:*) v="(no --version)" ;; esac
+      echo "    ${C_GREEN}ok${C_RESET}  $t: $v"
+    else
+      echo "    ${C_YELLOW}missing${C_RESET}  $t"
+    fi
+  done
+  echo
+  echo "  ${C_BOLD}Auth:${C_RESET}"
+  if is_installed gh && gh auth status >/dev/null 2>&1; then
+    echo "    ${C_GREEN}ok${C_RESET}  gh authenticated"
+  else
+    echo "    ${C_YELLOW}missing${C_RESET}  gh not authenticated"
+  fi
+  if op account list >/dev/null 2>&1; then
+    echo "    ${C_GREEN}ok${C_RESET}  1Password signed in"
+    if value="$(op item get "Ollama Cloud Pro API Key" --fields credential --reveal 2>/dev/null)" && [[ -n "$value" ]]; then
+      echo "    ${C_GREEN}ok${C_RESET}  secret read works (Ollama Cloud Pro API Key)"
+    else
+      echo "    ${C_YELLOW}missing${C_RESET}  cannot read secrets — CLI session broken"
+    fi
+    if [[ -S "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ]]; then
+      echo "    ${C_GREEN}ok${C_RESET}  SSH agent socket present"
+    else
+      echo "    ${C_YELLOW}missing${C_RESET}  SSH agent socket not found"
+    fi
+  else
+    echo "    ${C_YELLOW}missing${C_RESET}  1Password not signed in"
+  fi
+  if [[ -n "${OLLAMA_CLOUD_API_KEY:-}" ]] \
+      || ([[ -f "$HOME/.config/op/secrets.env" ]] && grep -q "OLLAMA_CLOUD_API_KEY=" "$HOME/.config/op/secrets.env"); then
+    echo "    ${C_GREEN}ok${C_RESET}  codex ready (ollama-cloud key present)"
+  else
+    echo "    ${C_YELLOW}missing${C_RESET}  codex key missing — run 80-auth.sh"
+  fi
+  echo
+}
 
 preflight() {
   log "preflight: network, disk, power"
@@ -361,6 +420,11 @@ main() {
   log "plan: ${STEPS[*]:-<empty>}"
   [[ ${#STEPS[@]} -gt 0 ]] || fail "empty plan — no steps match this machine"
 
+  diagnostics
+  if [[ "$DIAGNOSTICS" == true ]]; then
+    log "diagnostics only — exiting"
+    exit 0
+  fi
   preflight
   print_plan
   select_steps

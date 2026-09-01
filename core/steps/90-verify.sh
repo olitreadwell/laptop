@@ -8,7 +8,9 @@ ok=0
 missing=0
 for t in brew git gh op mise zsh starship fzf zoxide; do
   if is_installed "$t"; then
-    ok "  $t ($("$t" --version 2>/dev/null | head -1))"
+    v="$("$t" --version 2>/dev/null | head -1 || true)"
+    case "$v" in Usage:*|Error:*) v="(no --version)" ;; esac
+    ok "  $t ($v)"
     ok=$((ok + 1))
   else
     warn "  missing: $t"
@@ -45,6 +47,23 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
   else
     warn "  missing: microphone"
   fi
+fi
+
+# 1Password: signed in + can actually read secrets + SSH agent.
+if op account list >/dev/null 2>&1; then
+  ok "  1Password signed in"
+  if value="$(op item get "Ollama Cloud Pro API Key" --fields credential --reveal 2>/dev/null)" && [[ -n "$value" ]]; then
+    ok "  1Password secret read works"
+  else
+    warn "  1Password cannot read secrets — CLI session broken, run: op signin"
+  fi
+  if [[ -S "$HOME/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock" ]]; then
+    ok "  1Password SSH agent socket present"
+  else
+    warn "  1Password SSH agent socket missing — enable in 1Password → Settings → SSH Agent"
+  fi
+else
+  warn "  1Password not signed in — open the app and sign in"
 fi
 
 # Codex: config, provider, keys, live smoke test.
