@@ -7,6 +7,8 @@ brew "openssl@3"
 brew "gettext"
 # Distributed revision control system
 brew "git"
+# Terminal UI for the bootstrap (spinner, styles, confirm)
+brew "gum"
 # Extendable version manager with support for Ruby, Node.js, Erlang & more
 # Official Amazon AWS command-line interface
 brew "awscli"

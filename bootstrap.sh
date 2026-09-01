@@ -72,12 +72,23 @@ preflight() {
 
 print_plan() {
   echo
-  echo "${C_BOLD}${C_MAGENTA}Plan for this machine:${C_RESET}"
-  local i=1 step
-  for step in "${STEPS[@]}"; do
-    echo "  ${C_CYAN}$i.${C_RESET} $step"
-    i=$((i + 1))
-  done
+  if has_gum; then
+    local body=""
+    local i=1 step
+    for step in "${STEPS[@]}"; do
+      body+="  $i. $step\n"
+      i=$((i + 1))
+    done
+    gum style --border double --padding "0 2" --foreground 212 \
+      "Plan for this machine:" "$(printf '%b' "$body")"
+  else
+    echo "${C_BOLD}${C_MAGENTA}Plan for this machine:${C_RESET}"
+    local i=1 step
+    for step in "${STEPS[@]}"; do
+      echo "  ${C_CYAN}$i.${C_RESET} $step"
+      i=$((i + 1))
+    done
+  fi
   echo
 }
 
@@ -91,8 +102,28 @@ select_steps() {
     [[ ${#chosen[@]} -gt 0 ]] || fail "aborted — nothing selected"
     STEPS=("${chosen[@]}")
   else
-    read -r -p "Run these steps now? [y/N] " answer
-    [[ "$answer" == "y" || "$answer" == "Y" ]] || fail "aborted — nothing changed"
+    if has_gum; then
+      gum confirm "Run these steps now?" || fail "aborted — nothing changed"
+    else
+      read -r -p "Run these steps now? [y/N] " answer
+      [[ "$answer" == "y" || "$answer" == "Y" ]] || fail "aborted — nothing changed"
+    fi
+  fi
+}
+
+# has_gum — true when the gum TUI is installed (brew formula, step 20).
+has_gum() { command -v gum >/dev/null 2>&1; }
+
+# run_step_gum <step> <idx> <total> — gum spin spinner + title while the
+# step runs; output captured, shown on failure.
+run_step_gum() {
+  local step="$1" idx="$2" total="$3"
+  local step_start=$SECONDS
+  if gum spin --spinner dot --title "$step ($((idx + 1))/$total)" \
+      -- bash "$REPO_DIR/core/steps/$step.sh"; then
+    ok "step $step done in $((SECONDS - step_start))s"
+  else
+    fail "step $step failed — fix and re-run: bash $LAPTOP_REPO_DIR/bootstrap.sh --from $step"
   fi
 }
 
@@ -277,7 +308,11 @@ main() {
       local b
       b="$(batch_of "$step")"
       [[ "$b" != "$batch" ]] && batch="$b"
-      run_step_verbose "$step" "$idx" "$total" "$batch"
+      if has_gum; then
+        run_step_gum "$step" "$idx" "$total"
+      else
+        run_step_verbose "$step" "$idx" "$total" "$batch"
+      fi
       idx=$((idx + 1))
       continue
     fi
@@ -296,10 +331,18 @@ main() {
   done
 
   echo
-  echo "${C_BOLD}${C_GREEN}==> bootstrap complete${C_RESET}"
-  echo "  log: $LAPTOP_LOG_FILE"
-  echo "  next: 1Password sign-in, then: bash $LAPTOP_REPO_DIR/core/steps/80-auth.sh"
-  echo "  then: bash $LAPTOP_REPO_DIR/core/steps/90-verify.sh"
+  if has_gum; then
+    gum style --border double --padding "0 2" --foreground 212 \
+      "==> bootstrap complete" \
+      "log: $LAPTOP_LOG_FILE" \
+      "next: 1Password sign-in, then: bash $LAPTOP_REPO_DIR/core/steps/80-auth.sh" \
+      "then: bash $LAPTOP_REPO_DIR/core/steps/90-verify.sh"
+  else
+    echo "${C_BOLD}${C_GREEN}==> bootstrap complete${C_RESET}"
+    echo "  log: $LAPTOP_LOG_FILE"
+    echo "  next: 1Password sign-in, then: bash $LAPTOP_REPO_DIR/core/steps/80-auth.sh"
+    echo "  then: bash $LAPTOP_REPO_DIR/core/steps/90-verify.sh"
+  fi
   log "laptop bootstrap complete"
 }
 

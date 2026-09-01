@@ -14,6 +14,11 @@ else
   is_installed brew || fail "Homebrew install failed"
 fi
 
+# gum powers the bootstrap TUI — install early so later steps can use it.
+if ! is_installed gum; then
+  run_cmd_soft "install gum" brew install gum
+fi
+
 if [[ -f "$LAPTOP_REPO_DIR/Brewfile" ]]; then
   run_cmd_soft "brew bundle" brew bundle --verbose --file="$LAPTOP_REPO_DIR/Brewfile"
 else
