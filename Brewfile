@@ -95,6 +95,7 @@ brew "yarn"
 brew "hashicorp/tap/terraform", trusted: true
 # Password manager that keeps all passwords secure behind one password
 cask "1password"
+cask "1password-cli"
 # Watch local content on Apple TV and Chromecast
 cask "airflow"
 # Web browser focusing on privacy

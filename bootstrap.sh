@@ -5,10 +5,11 @@
 # Usage:
 #   bootstrap.sh                 full run (interactive steps may prompt)
 #   bootstrap.sh --dry-run       preview the plan without running anything
-#   bootstrap.sh --from <step>   resume from a step (e.g. 30-homebrew)
+#   bootstrap.sh --from <step>   resume from a step (e.g. 20-homebrew)
 #   bootstrap.sh --only <step>   run a single step
 #   bootstrap.sh --yes           non-interactive: skip prompts, warn instead
 #   bootstrap.sh --no-sudo       skip steps that need sudo
+#   bootstrap.sh --menu          force the interactive step-selection menu
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -17,6 +18,7 @@ export LAPTOP_LOG_FILE="${LAPTOP_LOG_FILE:-$HOME/laptop.log}"
 export LAPTOP_STATE_DIR="${LAPTOP_STATE_DIR:-$HOME/.laptop/state}"
 
 source "$REPO_DIR/core/lib.sh"
+source "$REPO_DIR/core/tui.sh"
 
 # Apple Silicon: Homebrew lives in /opt/homebrew — make it visible to every step.
 if [[ -d /opt/homebrew/bin ]]; then
@@ -28,6 +30,7 @@ FROM_STEP=""
 ONLY_STEP=""
 ASSUME_YES=false
 NO_SUDO=false
+MENU=false
 
 usage() {
   sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
@@ -39,6 +42,7 @@ while [[ $# -gt 0 ]]; do
     --from)    FROM_STEP="${2:-}"; shift 2 ;;
     --only)    ONLY_STEP="${2:-}"; shift 2 ;;
     --yes)     ASSUME_YES=true; shift ;;
+    --menu)    MENU=true; shift ;;
     --no-sudo) NO_SUDO=true; shift ;;
     --help|-h) usage; exit 0 ;;
     *) fail "unknown argument: $1 (see --help)" ;;
@@ -74,12 +78,19 @@ print_plan() {
   echo
 }
 
-confirm_run() {
+select_steps() {
   if [[ "$DRY_RUN" == true || "$ASSUME_YES" == true ]]; then
     return 0
   fi
-  read -r -p "Run these steps now? [y/N] " answer
-  [[ "$answer" == "y" || "$answer" == "Y" ]] || fail "aborted — nothing changed"
+  if [[ "$MENU" == true || ( -t 0 && -t 1 ) ]]; then
+    local -a chosen=()
+    while IFS= read -r s; do chosen+=("$s"); done       < <(tui_select_steps "Select steps to run" "${STEPS[@]}")
+    [[ ${#chosen[@]} -gt 0 ]] || fail "aborted — nothing selected"
+    STEPS=("${chosen[@]}")
+  else
+    read -r -p "Run these steps now? [y/N] " answer
+    [[ "$answer" == "y" || "$answer" == "Y" ]] || fail "aborted — nothing changed"
+  fi
 }
 
 main() {
@@ -98,7 +109,7 @@ main() {
 
   preflight
   print_plan
-  confirm_run
+  select_steps
 
   local step started=false step_start elapsed
   for step in "${STEPS[@]}"; do

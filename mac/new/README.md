@@ -10,14 +10,14 @@ Next provisioning target. Apple Silicon changes several assumptions.
 ## Apple Silicon differences
 
 - Homebrew installs to `/opt/homebrew`; PATH must include it (step
-  `30-homebrew.sh` handles this).
+  `20-homebrew.sh` handles this).
 - Rosetta 2 needed for x86-only tools: installed by `15-rosetta-arm64.sh`
   (`softwareupdate --install-rosetta --agree-to-license`) before brew bundle.
 - arm64 bottles for most formulae; some tools still x86-only — detect and
   warn, don't fail.
 - `uname -m` returns `arm64`; `core/detect.sh` reports `chip=apple-silicon`.
 - Newer macOS: `defaults` keys change, Gatekeeper stricter, 1Password SSH
-  agent behavior may differ — verify step 20 on the real machine.
+  agent behavior may differ — verify step 30 on the real machine.
 
 ## New-machine runbook
 

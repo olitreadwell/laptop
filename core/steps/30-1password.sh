@@ -34,7 +34,7 @@ else
   while ! op account list >/dev/null 2>&1; do
     if [[ "$waited" -ge 180 ]]; then
       warn "1Password not signed in after 3 min — sign in, then re-run:"
-      warn "bash $LAPTOP_REPO_DIR/bootstrap.sh --from 20-1password"
+      warn "bash $LAPTOP_REPO_DIR/bootstrap.sh --from 30-1password"
       break
     fi
     sleep 5
