@@ -125,25 +125,111 @@ batch_of() {
   esac
 }
 
-# run_step_verbose <step> <idx> <total> — animated bar + spinner, with the
-# step's latest output line shown live (download progress etc). Full step
-# output replays after the step finishes.
+# parse_items <tmpfile> — emit ITEM:<name>:<pct> and PCT:<pct> lines from a
+# step's captured output, so the panel can show per-item progress.
+parse_items() {
+  local tmp="$1" line item pct
+  tr '\r' '\n' < "$tmp" | while IFS= read -r line; do
+    case "$line" in
+      *"==> Downloading "*)
+        item="${line#*==> Downloading }"
+        if [[ "$item" == *"/homebrew/core/"* ]]; then
+          item="${item#*homebrew/core/}"; item="${item%%/*}"
+        else
+          item="$(basename "$item")"
+        fi
+        echo "ITEM:$item:0" ;;
+      *"Cloning into '"*)
+        item="${line#*Cloning into \'}"; item="${item%%\'*}"
+        echo "ITEM:$item:0" ;;
+      *"==> Installing "*)
+        item="${line#*==> Installing }"
+        echo "ITEM:$item:0" ;;
+      *"==> Fetching "*)
+        item="${line#*==> Fetching }"
+        echo "ITEM:$item:0" ;;
+      *"Receiving objects: "*)
+        pct="${line#*Receiving objects: }"; pct="${pct%%%*}"
+        echo "PCT:$pct" ;;
+      *"downloading "*)
+        item="${line% downloading*}"
+        echo "ITEM:$item:0" ;;
+      *" | "*[0-9]%*)
+        pct="${line%% *}"; pct="${pct%\%}"; pct="${pct%%.*}"
+        echo "PCT:$pct" ;;
+    esac
+  done
+}
+
+# render_panel <tmpfile> <idx> <total> <step> <spin> <batch> — full-screen
+# panel: overall bar + one mini progress bar per item seen so far.
+render_panel() {
+  local tmp="$1" idx="$2" total="$3" step="$4" spin="$5" batch="$6"
+  local -a names=() pcts=()
+  local line item pct n j k
+  while IFS= read -r line; do
+    case "$line" in
+      ITEM:*)
+        item="${line#ITEM:}"; pct="${item##*:}"; item="${item%:*}"
+        n=${#names[@]}
+        for ((j = 0; j < n; j++)); do
+          if [[ "${names[$j]}" == "$item" ]]; then
+            pcts[$j]=$pct; item=""; break
+          fi
+        done
+        if [[ -n "$item" ]]; then names+=("$item"); pcts+=("$pct"); fi
+        ;;
+      PCT:*)
+        pct="${line#PCT:}"
+        n=${#names[@]}
+        [[ "$n" -gt 0 ]] && pcts[$((n - 1))]=$pct
+        ;;
+    esac
+  done < <(parse_items "$tmp")
+
+  local cols="${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}"
+  local lines="${LINES:-$(tput lines 2>/dev/null || echo 24)}"
+  local bar_w=$((cols - 28)); [[ "$bar_w" -lt 10 ]] && bar_w=10
+  local pct=$((idx * 100 / total))
+  local filled=$((bar_w * idx / total))
+  local bar=""
+  for ((i = 0; i < filled; i++)); do bar+="█"; done
+  for ((i = filled; i < bar_w; i++)); do bar+="░"; done
+
+  printf '\033[2J\033[H'
+  printf '\033[1;36m%s\033[0m %s %3d%% (%d/%d)\n' "$step" "$spin" "$pct" "$idx" "$total"
+  printf '%s\n' "$bar"
+  n=${#names[@]}
+  local max_items=$((lines - 4)); [[ "$max_items" -lt 1 ]] && max_items=1
+  local start=0
+  [[ "$n" -gt "$max_items" ]] && start=$((n - max_items))
+  for ((j = start; j < n; j++)); do
+    local ipct="${pcts[$j]}" iw=$((bar_w - 12)); [[ "$iw" -lt 6 ]] && iw=6
+    local ifilled=$((iw * ipct / 100))
+    local ibar=""
+    for ((k = 0; k < ifilled; k++)); do ibar+="█"; done
+    for ((k = ifilled; k < iw; k++)); do ibar+="░"; done
+    printf '  %s %3d%% %s\n' "$ibar" "$ipct" "${names[$j]}"
+  done
+}
+
+# run_step_verbose <step> <idx> <total> <batch> — full-screen panel with
+# per-item progress while the step runs; full output replays after.
 run_step_verbose() {
-  local step="$1" idx="$2" total="$3"
-  local step_start=$SECONDS pid rc i chars='|/-\\' out tmp
+  local step="$1" idx="$2" total="$3" batch="$4"
+  local step_start=$SECONDS pid rc i chars='|/-\\' tmp
   tmp="$(mktemp)"
   STEP_NAME="$step" bash "$REPO_DIR/core/steps/$step.sh" >"$tmp" 2>&1 &
   pid=$!
   i=0
   while kill -0 "$pid" 2>/dev/null; do
-    out="$(tr '\r' '\n' < "$tmp" 2>/dev/null | tail -1 | cut -c1-60)"
-    progress_bar "$idx" "$total" "$step ${chars:$i:1} | ${out:-working...}"
+    render_panel "$tmp" "$idx" "$total" "$step" "${chars:$i:1}" "$batch"
     i=$(( (i + 1) % ${#chars} ))
     sleep 0.1
   done
   wait "$pid"
   rc=$?
-  progress_bar "$((idx + 1))" "$total" "$step"
+  render_panel "$tmp" "$((idx + 1))" "$total" "$step" "" "$batch"
   echo
   cat "$tmp"
   rm "$tmp"
@@ -184,12 +270,8 @@ main() {
     if [[ "$VERBOSE" == true && -t 1 && "$DRY_RUN" == false ]]; then
       local b
       b="$(batch_of "$step")"
-      if [[ "$b" != "$batch" ]]; then
-        batch="$b"
-        echo
-        echo "${C_BOLD}${C_MAGENTA}== Batch: $batch${C_RESET}"
-      fi
-      run_step_verbose "$step" "$idx" "$total"
+      [[ "$b" != "$batch" ]] && batch="$b"
+      run_step_verbose "$step" "$idx" "$total" "$batch"
       idx=$((idx + 1))
       continue
     fi
