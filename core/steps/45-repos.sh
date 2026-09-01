@@ -27,7 +27,7 @@ clone_one() {
   elif [[ -d "$dest" ]]; then
     warn "repo dir exists but not a git repo — skipping: $repo"
   else
-    if git clone --filter=blob:none --progress "git@github.com:olitreadwell/$repo.git" "$dest" 2>/dev/null; then
+    if git clone --filter=blob:none --progress "https://github.com/olitreadwell/$repo.git" "$dest" 2>/dev/null; then
       ok "cloned: $repo"
     else
       warn "clone failed (offline or missing): $repo"
