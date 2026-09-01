@@ -14,7 +14,7 @@ if [[ -d "$HOME/dotfiles/.git" ]]; then
   git -C "$HOME/dotfiles" pull --ff-only origin main 2>/dev/null \
     || warn "dotfiles pull failed (offline or conflicts)"
 else
-  run_cmd "clone dotfiles" git clone --progress https://github.com/olitreadwell/dotfiles.git "$HOME/dotfiles"
+  run_cmd "clone dotfiles" git clone --progress git@github.com:olitreadwell/dotfiles.git "$HOME/dotfiles"
 fi
 
 if [[ -x "$HOME/dotfiles/executable_install.sh" ]]; then
@@ -28,7 +28,7 @@ if [[ -d "$HOME/.agents/.git" ]]; then
   git -C "$HOME/.agents" pull --ff-only origin main 2>/dev/null \
     || warn "ai-harness pull failed (offline or conflicts)"
 else
-  run_cmd "clone ai-harness" git clone --progress https://github.com/olitreadwell/ai-harness.git "$HOME/.agents"
+  run_cmd "clone ai-harness" git clone --progress git@github.com:olitreadwell/ai-harness.git "$HOME/.agents"
 fi
 
 if [[ -x "$HOME/.agents/install.sh" ]]; then
