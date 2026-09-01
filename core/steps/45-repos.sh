@@ -13,6 +13,11 @@ fi
 
 mkdir -p "$HOME/code"
 
+# Wire git to gh's credential helper so private clones never prompt.
+if is_installed gh && gh auth status >/dev/null 2>&1; then
+  gh auth setup-git 2>/dev/null || true
+fi
+
 clone_one() {
   local repo="$1" dest="$HOME/code/$repo"
   if [[ -d "$dest/.git" ]]; then

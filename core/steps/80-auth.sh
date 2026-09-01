@@ -6,10 +6,12 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
 if is_installed gh; then
   if gh auth status >/dev/null 2>&1; then
     log "gh authenticated"
+    gh auth setup-git 2>/dev/null && log "git credential helper set (no password prompts)"
   elif [[ -n "${LAPTOP_GH_TOKEN_ITEM:-}" ]]; then
     if token="$(op_read "$LAPTOP_GH_TOKEN_ITEM")" && [[ -n "$token" ]]; then
       if printf '%s' "$token" | gh auth login --with-token; then
         ok "gh authenticated via 1Password ($LAPTOP_GH_TOKEN_ITEM)"
+        gh auth setup-git 2>/dev/null && log "git credential helper set (no password prompts)"
       else
         warn "gh auth via 1Password failed — run manually: gh auth login"
       fi
