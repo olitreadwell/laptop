@@ -5,6 +5,9 @@ set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
 
 mkdir -p "$HOME/.codex"
+if [[ -f "$HOME/.codex/config.toml" ]]; then
+  fix_home_paths "$HOME/.codex/config.toml"
+fi
 if [[ -f "$HOME/.codex/model-catalog.json" ]]; then
   log "codex model catalog present"
 else

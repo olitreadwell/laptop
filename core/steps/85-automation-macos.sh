@@ -14,6 +14,7 @@ if [[ -f "$LAPTOP_REPO_DIR/automation/ssh-config" ]]; then
   fi
   cp "$LAPTOP_REPO_DIR/automation/ssh-config" "$HOME/.ssh/config"
   chmod 600 "$HOME/.ssh/config"
+  fix_home_paths "$HOME/.ssh/config"
   ok "ssh config set (1Password agent)"
 fi
 
@@ -51,6 +52,7 @@ if [[ -d "$LAPTOP_REPO_DIR/automation/launchagents" ]]; then
       backup_file "$dest"
     fi
     cp "$f" "$dest"
+    fix_home_paths "$dest"
     if ! launchctl list 2>/dev/null | grep -q "${name%.plist}"; then
       launchctl bootstrap "gui/$(id -u)" "$dest" 2>/dev/null \
         || launchctl load "$dest" 2>/dev/null || true

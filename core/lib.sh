@@ -84,6 +84,15 @@ backup_file() {
   [[ -e "$f" && ! -L "$f" ]] && cp -p "$f" "$f.bak.$(date +%s)"
 }
 
+# fix_home_paths <file> — replace the old machine's /Users/olitreadwell
+# paths with the current $HOME (new machine may have a different username).
+fix_home_paths() {
+  local f="$1"
+  [[ -f "$f" ]] || return 0
+  sed -i '' "s|/Users/olitreadwell|$HOME|g" "$f" 2>/dev/null \
+    || sed -i "s|/Users/olitreadwell|$HOME|g" "$f"
+}
+
 # mark_done / was_done <name> — optional idempotency markers for steps that
 # cannot detect their own completion from system state
 mark_done() { : > "$LAPTOP_STATE_DIR/$1"; }

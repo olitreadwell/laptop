@@ -35,6 +35,17 @@ if [[ -x "$HOME/.agents/install.sh" ]]; then
   run_cmd "wire agent skills" bash "$HOME/.agents/install.sh"
 fi
 
+# New machine may have a different username or arch — fix the dotfiles'
+# hardcoded /Users/olitreadwell paths and the Intel brew path in .zprofile.
+for f in "$HOME/.zprofile" "$HOME/.zshrc"; do
+  fix_home_paths "$f"
+done
+if [[ "$(uname -m)" == "arm64" ]] && [[ -f "$HOME/.zprofile" ]]; then
+  sed -i '' 's|/usr/local/bin/brew|/opt/homebrew/bin/brew|g' "$HOME/.zprofile" 2>/dev/null \
+    || sed -i 's|/usr/local/bin/brew|/opt/homebrew/bin/brew|g' "$HOME/.zprofile"
+  log "zprofile brew path fixed for Apple Silicon"
+fi
+
 # Global Claude rules + settings (from this repo) — copy if missing.
 mkdir -p "$HOME/.claude"
 for f in CLAUDE.md settings.json; do
