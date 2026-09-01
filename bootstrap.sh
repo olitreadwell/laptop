@@ -125,16 +125,19 @@ batch_of() {
   esac
 }
 
-# run_step_verbose <step> <idx> <total> — animated bar + spinner while the
-# step runs; step output scrolls above the bar.
+# run_step_verbose <step> <idx> <total> — animated bar + spinner, with the
+# step's latest output line shown live (download progress etc). Full step
+# output replays after the step finishes.
 run_step_verbose() {
   local step="$1" idx="$2" total="$3"
-  local step_start=$SECONDS pid rc i chars='|/-\\'
-  STEP_NAME="$step" bash "$REPO_DIR/core/steps/$step.sh" &
+  local step_start=$SECONDS pid rc i chars='|/-\\' out tmp
+  tmp="$(mktemp)"
+  STEP_NAME="$step" bash "$REPO_DIR/core/steps/$step.sh" >"$tmp" 2>&1 &
   pid=$!
   i=0
   while kill -0 "$pid" 2>/dev/null; do
-    progress_bar "$idx" "$total" "$step ${chars:$i:1}"
+    out="$(tr '\r' '\n' < "$tmp" 2>/dev/null | tail -1 | cut -c1-60)"
+    progress_bar "$idx" "$total" "$step ${chars:$i:1} | ${out:-working...}"
     i=$(( (i + 1) % ${#chars} ))
     sleep 0.1
   done
@@ -142,6 +145,8 @@ run_step_verbose() {
   rc=$?
   progress_bar "$((idx + 1))" "$total" "$step"
   echo
+  cat "$tmp"
+  rm "$tmp"
   if [[ "$rc" -eq 0 ]]; then
     ok "step $step done in $((SECONDS - step_start))s"
   else
