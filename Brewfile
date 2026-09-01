@@ -34,7 +34,7 @@ brew "icu4c@76"
 # Play, record, convert, and stream select audio and video codecs
 brew "ffmpeg"
 # GitHub command-line tool
-brew "gh", link: false
+brew "gh"
 # Quickly rewrite git repository history
 brew "git-filter-repo"
 # GNU Privacy Guard (OpenPGP)
@@ -62,7 +62,7 @@ brew "minikube"
 # MongoDB Shell to connect, configure, query, and work with your MongoDB database
 brew "mongosh"
 # Create, run, and share large language models (LLMs)
-brew "ollama", link: false
+brew "ollama"
 # AI coding agent, built for the terminal
 brew "opencode", link: false
 # Development kit for the Java programming language
