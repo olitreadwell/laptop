@@ -199,6 +199,7 @@ render_panel() {
   printf '\033[2J\033[H'
   printf '\033[1;36m%s\033[0m %s %3d%% (%d/%d)\n' "$step" "$spin" "$pct" "$idx" "$total"
   printf '%s\n' "$bar"
+  printf '\033[2mfull output: %s\033[0m\n' "$LAPTOP_LOG_FILE"
   n=${#names[@]}
   local max_items=$((lines - 4)); [[ "$max_items" -lt 1 ]] && max_items=1
   local start=0
@@ -214,7 +215,8 @@ render_panel() {
 }
 
 # run_step_verbose <step> <idx> <total> <batch> — full-screen panel with
-# per-item progress while the step runs; full output replays after.
+# per-item progress while the step runs. No output flood: full detail goes
+# to the log file; on failure the last lines are shown.
 run_step_verbose() {
   local step="$1" idx="$2" total="$3" batch="$4"
   local step_start=$SECONDS pid rc i chars='|/-\\' tmp
@@ -230,8 +232,12 @@ run_step_verbose() {
   wait "$pid"
   rc=$?
   render_panel "$tmp" "$((idx + 1))" "$total" "$step" "" "$batch"
-  echo
-  cat "$tmp"
+  sleep 0.3
+  printf '\033[2J\033[H'
+  if [[ "$rc" -ne 0 ]]; then
+    warn "step $step failed — last output:"
+    tail -n 20 "$tmp"
+  fi
   rm "$tmp"
   if [[ "$rc" -eq 0 ]]; then
     ok "step $step done in $((SECONDS - step_start))s"
