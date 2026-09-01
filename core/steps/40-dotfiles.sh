@@ -7,6 +7,10 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
 # private clones never prompt for a password; fall back to plain git.
 clone_private() {
   local repo="$1" dest="$2"
+  if [[ -d "$dest" && ! -d "$dest/.git" ]]; then
+    warn "existing non-git dir at $dest — moving aside"
+    mv "$dest" "$dest.bak.$(date +%s)"
+  fi
   if is_installed gh && gh auth status >/dev/null 2>&1; then
     gh repo clone "$repo" "$dest" 2>/dev/null \
       || git clone --progress "https://github.com/$repo.git" "$dest"

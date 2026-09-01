@@ -182,7 +182,7 @@ run_step_gum() {
   local step="$1" idx="$2" total="$3"
   local step_start=$SECONDS
   if gum spin --show-output --spinner dot --title "$step ($((idx + 1))/$total)" \
-      -- bash "$REPO_DIR/core/steps/$step.sh"; then
+      -- env STEP_NAME="$step" bash "$REPO_DIR/core/steps/$step.sh"; then
     ok "step $step done in $((SECONDS - step_start))s"
   else
     fail "step $step failed — fix and re-run: bash $LAPTOP_REPO_DIR/bootstrap.sh --from $step"
