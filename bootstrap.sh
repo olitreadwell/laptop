@@ -18,6 +18,11 @@ export LAPTOP_STATE_DIR="${LAPTOP_STATE_DIR:-$HOME/.laptop/state}"
 
 source "$REPO_DIR/core/lib.sh"
 
+# Apple Silicon: Homebrew lives in /opt/homebrew — make it visible to every step.
+if [[ -d /opt/homebrew/bin ]]; then
+  export PATH="/opt/homebrew/bin:$PATH"
+fi
+
 DRY_RUN=false
 FROM_STEP=""
 ONLY_STEP=""
