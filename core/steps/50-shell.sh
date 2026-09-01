@@ -13,6 +13,15 @@ else
   log "oh-my-zsh present"
 fi
 
+# Starship prompt: the dotfiles install links the dark/light variants, but
+# the active ~/.config/starship.toml is normally created by the
+# starship-dark / starship-light functions. Link the dark variant by default
+# so the two-line prompt works out of the box.
+if [[ -f "$HOME/.config/starship.dark.toml" ]] && [[ ! -e "$HOME/.config/starship.toml" ]]; then
+  ln -s "$HOME/.config/starship.dark.toml" "$HOME/.config/starship.toml"
+  ok "starship config linked (dark)"
+fi
+
 if [[ "$(uname -s)" == "Darwin" ]] && is_installed zsh; then
   if [[ "$(dscl . -read "$HOME" UserShell 2>/dev/null)" != *zsh* ]]; then
     run_cmd "set default shell" chsh -s "$(command -v zsh)"
