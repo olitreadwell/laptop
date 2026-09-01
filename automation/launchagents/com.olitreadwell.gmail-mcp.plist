@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HOME</key>
+		<string>/Users/olitreadwell</string>
+		<key>PATH</key>
+		<string>/Users/olitreadwell/.local/share/mise/installs/node/lts/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+		<key>PORT</key>
+		<string>8898</string>
+	</dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.olitreadwell.gmail-mcp</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/olitreadwell/.local/bin/launchd/gmail-mcp</string>
+		<string>-y</string>
+		<string>@razroo/gmail-mcp</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/olitreadwell/.gmail-mcp/gmail-mcp.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/olitreadwell/.gmail-mcp/gmail-mcp.log</string>
+	<key>WorkingDirectory</key>
+	<string>/Users/olitreadwell</string>
+</dict>
+</plist>

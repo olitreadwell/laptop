@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>HOME</key>
+		<string>/Users/olitreadwell</string>
+		<key>PATH</key>
+		<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>com.olitreadwell.career-dashboard-server</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/olitreadwell/.career-reporting/bin/career-dashboard-server</string>
+		<string>/Users/olitreadwell/.career-reporting/serve-dashboard.mjs</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/tmp/career-dashboard-server.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/tmp/career-dashboard-server.log</string>
+</dict>
+</plist>

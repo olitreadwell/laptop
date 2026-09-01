@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Template only — install steps are in meta/automations/README.md.
+  Always-on live dashboard server: serves meta/dashboard/index.html and
+  /api/live on port 8787. KeepAlive + RunAtLoad so it survives reboots
+  and crashes. `oli dashboard` opens it and kickstarts this agent if the
+  port is down.
+-->
+<plist version="1.0">
+<dict>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>HOME</key>
+    <string>/Users/olitreadwell</string>
+    <key>OLI_ROOT</key>
+    <string>/Users/olitreadwell/oli</string>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+  </dict>
+  <key>KeepAlive</key>
+  <true/>
+  <key>Label</key>
+  <string>com.oli.dashboard-live</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/Users/olitreadwell/oli/meta/bin/launchd/oli-dashboard-live</string>
+    <string>/Users/olitreadwell/oli/meta/bin/dashboard-live</string>
+    <string>--port</string>
+    <string>8787</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardErrorPath</key>
+  <string>/Users/olitreadwell/oli/meta/automations/logs/dashboard-live.err.log</string>
+  <key>StandardOutPath</key>
+  <string>/Users/olitreadwell/oli/meta/automations/logs/dashboard-live.log</string>
+</dict>
+</plist>

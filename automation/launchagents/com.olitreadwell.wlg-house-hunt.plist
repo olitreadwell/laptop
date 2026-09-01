@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.olitreadwell.wlg-house-hunt</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/olitreadwell/.local/bin/launchd/wlg-house-hunt</string>
+		<string>/Users/olitreadwell/code/wlg-house-hunt/scripts/find-listings.mjs</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StandardErrorPath</key>
+	<string>/Users/olitreadwell/Library/Logs/wlg-house-hunt-finder.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/olitreadwell/Library/Logs/wlg-house-hunt-finder.log</string>
+	<key>StartInterval</key>
+	<integer>14400</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/olitreadwell/code/wlg-house-hunt</string>
+</dict>
+</plist>

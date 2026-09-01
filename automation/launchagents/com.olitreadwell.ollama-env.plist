@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.olitreadwell.ollama-env</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/olitreadwell/.local/bin/launchd/ollama-env</string>
+		<string>-c</string>
+		<string>launchctl setenv OLLAMA_KEEP_ALIVE -1; launchctl setenv OLLAMA_MAX_LOADED_MODELS 3</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+</dict>
+</plist>

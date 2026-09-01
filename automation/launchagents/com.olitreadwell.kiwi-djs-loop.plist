@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/Users/olitreadwell/.local/share/mise/installs/node/lts/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>Label</key>
+	<string>com.olitreadwell.kiwi-djs-loop</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/olitreadwell/.local/bin/launchd/kiwi-djs-loop</string>
+		<string>--env-file=/Users/olitreadwell/code/kiwi-djs/.env.local</string>
+		<string>--import</string>
+		<string>tsx</string>
+		<string>/Users/olitreadwell/code/kiwi-djs/scripts/loop.ts</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StandardErrorPath</key>
+	<string>/Users/olitreadwell/Library/Logs/kiwi-djs-loop.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/olitreadwell/Library/Logs/kiwi-djs-loop.log</string>
+	<key>StartCalendarInterval</key>
+	<dict>
+		<key>Hour</key>
+		<integer>4</integer>
+		<key>Minute</key>
+		<integer>30</integer>
+	</dict>
+	<key>WorkingDirectory</key>
+	<string>/Users/olitreadwell/code/kiwi-djs</string>
+</dict>
+</plist>

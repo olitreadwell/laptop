@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.olitreadwell.nz-microsite-loop</string>
+	<key>ProcessType</key>
+	<string>Background</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/olitreadwell/.local/bin/launchd/nz-microsite-loop</string>
+		<string>/Users/olitreadwell/code/nz-data-lab-dev/scripts/run-microsite-loop.sh</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StandardErrorPath</key>
+	<string>/Users/olitreadwell/Library/Logs/nz-microsite-loop.stderr.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/olitreadwell/Library/Logs/nz-microsite-loop.stdout.log</string>
+	<key>StartInterval</key>
+	<integer>1800</integer>
+</dict>
+</plist>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>Label</key>
+	<string>com.olitreadwell.dotfiles-backup</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/olitreadwell/.local/bin/launchd/dotfiles-backup</string>
+		<string>-c</string>
+		<string>cd ~/dotfiles &amp;&amp; git add -A &amp;&amp; git commit -m "Auto-backup $(date '+%Y-%m-%d %H:%M:%S')" &amp;&amp; git push origin main</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StandardErrorPath</key>
+	<string>/tmp/com.olitreadwell.dotfiles-backup.err</string>
+	<key>StandardOutPath</key>
+	<string>/tmp/com.olitreadwell.dotfiles-backup.log</string>
+	<key>StartInterval</key>
+	<integer>3600</integer>
+</dict>
+</plist>

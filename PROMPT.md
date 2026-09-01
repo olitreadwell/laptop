@@ -88,6 +88,7 @@ laptop/
 │       ├── 70-apps.sh     # App Store (mas) + app-level extras
 │       ├── 75-apps-config.sh # prefs, login items, open apps, sign-ins
 │       ├── 80-auth.sh     # gh / claude / codex auth
+│       ├── 85-automation-macos.sh # ssh agent, orca hooks, launch agents
 │       └── 90-verify.sh   # final checks + report
 ├── loop/
 │   ├── loop.sh            # exponential backoff runner (15m → 30m → 60m)
