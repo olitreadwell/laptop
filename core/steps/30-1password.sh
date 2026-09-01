@@ -7,7 +7,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
   if [[ -d "/Applications/1Password.app" ]]; then
     log "1Password app present"
   elif is_installed brew; then
-    run_cmd "install 1password cask" brew install --cask 1password
+    run_cmd "install 1password cask" brew install --yes --cask 1password
   else
     warn "1Password app not installed and Homebrew missing — install manually"
   fi
@@ -17,7 +17,7 @@ if is_installed op; then
   log "op CLI present"
 else
   if is_installed brew; then
-    run_cmd "install 1password-cli" brew install --cask 1password-cli
+    run_cmd "install 1password-cli" brew install --yes --cask 1password-cli
   else
     warn "op CLI missing — install manually"
   fi

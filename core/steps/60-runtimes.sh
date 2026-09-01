@@ -5,7 +5,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
 
 if ! is_installed mise; then
   if is_installed brew; then
-    run_cmd "install mise" brew install mise
+    run_cmd "install mise" brew install --yes mise
   else
     warn "mise missing and Homebrew unavailable — install manually"
     exit 1

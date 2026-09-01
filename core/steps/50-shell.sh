@@ -4,7 +4,7 @@ set -euo pipefail
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../lib.sh"
 
 if is_installed brew; then
-  run_cmd "install shell tools" brew install zsh starship fzf zoxide zsh-autosuggestions zsh-syntax-highlighting
+  run_cmd "install shell tools" brew install --yes zsh starship fzf zoxide zsh-autosuggestions zsh-syntax-highlighting
 fi
 
 if [[ ! -f "$HOME/.oh-my-zsh/oh-my-zsh.sh" ]]; then

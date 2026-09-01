@@ -16,12 +16,12 @@ fi
 
 # gum powers the bootstrap TUI — install early so later steps can use it.
 if ! is_installed gum; then
-  run_cmd_soft "install gum" brew install gum
+  run_cmd_soft "install gum" brew install --yes gum
 fi
 
 # mise is needed by brew bundle's npm section (reshim) — install first.
 if ! is_installed mise; then
-  run_cmd_soft "install mise" brew install mise
+  run_cmd_soft "install mise" brew install --yes mise
 fi
 
 if [[ -f "$LAPTOP_REPO_DIR/Brewfile" ]]; then
