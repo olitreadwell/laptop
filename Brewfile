@@ -54,6 +54,13 @@ brew "kubernetes-cli"
 brew "mackup"
 # Mac App Store command-line interface
 brew "mas"
+# Fast file search (rg)
+brew "ripgrep"
+# Go and Rust toolchains
+brew "go"
+brew "rust"
+# Text editor
+brew "emacs"
 # Run a Kubernetes cluster locally
 brew "minikube"
 # MongoDB Shell to connect, configure, query, and work with your MongoDB database
@@ -139,6 +146,15 @@ cask "stats"
 cask "whatsapp@beta"
 # Video communication and virtual meeting platform
 cask "zoom"
+# Terminal emulator
+cask "ghostty"
+# Window automation, firewall, VPN
+cask "hammerspoon"
+cask "lulu"
+cask "tailscale-app"
+# Utilities
+cask "dupeguru"
+cask "pearcleaner"
 mas "1Password for Safari", id: 1569813296
 mas "Adblock Plus", id: 1432731683
 mas "Dato", id: 1470584107
