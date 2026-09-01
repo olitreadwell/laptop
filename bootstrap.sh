@@ -119,7 +119,7 @@ has_gum() { command -v gum >/dev/null 2>&1; }
 run_step_gum() {
   local step="$1" idx="$2" total="$3"
   local step_start=$SECONDS
-  if gum spin --spinner dot --title "$step ($((idx + 1))/$total)" \
+  if gum spin --show-output --spinner dot --title "$step ($((idx + 1))/$total)" \
       -- bash "$REPO_DIR/core/steps/$step.sh"; then
     ok "step $step done in $((SECONDS - step_start))s"
   else
@@ -265,10 +265,7 @@ run_step_verbose() {
   render_panel "$tmp" "$((idx + 1))" "$total" "$step" "" "$batch"
   sleep 0.3
   printf '\033[2J\033[H'
-  if [[ "$rc" -ne 0 ]]; then
-    warn "step $step failed — last output:"
-    tail -n 20 "$tmp"
-  fi
+  cat "$tmp"
   rm "$tmp"
   if [[ "$rc" -eq 0 ]]; then
     ok "step $step done in $((SECONDS - step_start))s"

@@ -77,6 +77,7 @@ Watch progress: `tail -f ~/laptop-first-boot.log`. Then do the auth batch
    shows a colored plan and asks to confirm before running. Add
    `--verbose` for live progress: gum spinner + styled headers when gum is
    installed (step 20 installs it), ANSI per-item progress panel otherwise.
+   Full step output streams on screen and lands in `~/laptop.log`.
    Preflight
    checks network, disk space, and power first. Output is colored on the
    terminal, plain in `~/laptop.log`. Rosetta 2 installs itself on Apple
