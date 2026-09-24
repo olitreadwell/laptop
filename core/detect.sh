@@ -42,8 +42,12 @@ detect_model() {
 }
 
 detect_macos_version() {
+  # Always emits the key. Omitting it off macOS broke the key contract that
+  # tests/run.sh asserts, and `set -u` in bootstrap.sh would abort on it.
   if [[ "$(uname -s)" == "Darwin" ]]; then
     echo "macos_version=$(sw_vers -productVersion 2>/dev/null || echo unknown)"
+  else
+    echo "macos_version=n/a"
   fi
 }
 

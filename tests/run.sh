@@ -22,7 +22,10 @@ plan="$(bash "$REPO_DIR/core/plan.sh")"
 
 if command -v shellcheck >/dev/null 2>&1; then
   while IFS= read -r -d '' f; do
-    shellcheck -S warning "$f" || { echo "FAIL: shellcheck: $f"; failures=$((failures + 1)); }
+    # SC1090/SC1091: three hook scripts source a path assembled at runtime
+    # (an agent hook endpoint and the repo's own lib.sh), which shellcheck
+    # cannot follow. Everything else at warning level stays fatal.
+    shellcheck -S warning -e SC1090,SC1091 "$f" || { echo "FAIL: shellcheck: $f"; failures=$((failures + 1)); }
   done < <(find "$REPO_DIR" -name '*.sh' -not -path '*/state/*' -print0)
 fi
 

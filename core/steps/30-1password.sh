@@ -30,7 +30,10 @@ else
   log "enable Touch ID (Settings → Security → Touch ID) so the CLI unlocks"
   log "with your fingerprint from here on"
   open -a 1Password 2>/dev/null || true
-  local waited=0
+  # No `local` here: this is a top-level step script, not a function, and
+  # `local` outside a function exits 1, which `set -e` turns into an abort.
+  # That killed this step on any machine where 1Password was not signed in.
+  waited=0
   while ! op account list >/dev/null 2>&1; do
     # Establish the CLI session via the app (works once the GUI is
     # unlocked; stdin from /dev/null so it never blocks on a prompt).

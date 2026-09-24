@@ -410,6 +410,9 @@ main() {
   mkdir -p "$LAPTOP_STATE_DIR"
   log "laptop bootstrap start (dry_run=$DRY_RUN yes=$ASSUME_YES no_sudo=$NO_SUDO)"
 
+  # detect.sh prints key=value lines. Declare each key first: the eval is
+  # invisible to shellcheck, and under `set -u` a missing key would abort.
+  os='' arch='' chip='' model='' macos_version=''
   eval "$(bash "$REPO_DIR/core/detect.sh")"
   log "detected: os=$os arch=$arch chip=$chip model=$model macos_version=$macos_version"
 
