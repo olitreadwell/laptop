@@ -29,7 +29,7 @@ fi
 if [[ "$(uname -s)" == "Darwin" ]]; then
   if [[ -d "$HOME/Library/Mobile Documents/com~apple~CloudDocs" ]]; then
     ok "  iCloud Drive present"
-    if [[ -L "$HOME/Desktop" ]]; then
+    if [[ -L "$HOME/Desktop" ]] || xattr -p com.apple.file-provider-domain-id "$HOME/Desktop" 2>/dev/null | grep -q "CloudDocs"; then
       ok "  Desktop & Documents sync on"
     else
       warn "  Desktop & Documents sync off — enable: System Settings → Apple Account → iCloud → iCloud Drive"
@@ -52,7 +52,7 @@ fi
 # 1Password: signed in + can actually read secrets + SSH agent.
 if op account list >/dev/null 2>&1; then
   ok "  1Password signed in"
-  if value="$(op item get "Ollama Cloud Pro API Key" --fields credential --reveal 2>/dev/null)" && [[ -n "$value" ]]; then
+  if value="$(op item get "Ollama Cloud Max API Key" --fields credential --reveal 2>/dev/null)" && [[ -n "$value" ]]; then
     ok "  1Password secret read works"
   else
     warn "  1Password cannot read secrets — CLI session broken, run: op signin"
@@ -79,20 +79,20 @@ if is_installed codex; then
   else
     warn "  codex config missing — run dotfiles step (40)"
   fi
-  if [[ -f "$HOME/.config/op/secrets.env" ]] && grep -q "OLLAMA_CLOUD_API_KEY=" "$HOME/.config/op/secrets.env"; then
-    ok "  OLLAMA_CLOUD_API_KEY present"
+  if [[ -f "$HOME/.config/op/secrets.env" ]] && grep -q "OLLAMA_CLOUD_MAX_API_KEY=" "$HOME/.config/op/secrets.env"; then
+    ok "  OLLAMA_CLOUD_MAX_API_KEY present"
   else
-    warn "  OLLAMA_CLOUD_API_KEY missing — run 80-auth.sh"
+    warn "  OLLAMA_CLOUD_MAX_API_KEY missing — run 80-auth.sh"
   fi
-  if [[ -f "$HOME/.config/op/secrets.env" ]] && grep -q "OLLAMA_CLOUD_API_KEY_2=" "$HOME/.config/op/secrets.env"; then
-    ok "  OLLAMA_CLOUD_API_KEY_2 present"
+  if [[ -f "$HOME/.config/op/secrets.env" ]] && grep -q "OLLAMA_CLOUD_PRO_API_KEY=" "$HOME/.config/op/secrets.env"; then
+    ok "  OLLAMA_CLOUD_PRO_API_KEY present"
   else
-    warn "  OLLAMA_CLOUD_API_KEY_2 missing — run 80-auth.sh"
+    warn "  OLLAMA_CLOUD_PRO_API_KEY missing — run 80-auth.sh"
   fi
   if [[ -f "$HOME/.config/op/secrets.env" ]]; then
     source "$HOME/.config/op/secrets.env"
   fi
-  if [[ -n "${OLLAMA_CLOUD_API_KEY:-}" ]]; then
+  if [[ -n "${OLLAMA_CLOUD_MAX_API_KEY:-}" ]]; then
     if out="$(codex exec --skip-git-repo-check "reply with exactly: codex-ok" 2>&1)"; then
       if grep -q "codex-ok" <<<"$out"; then
         ok "  codex live test passed"
@@ -103,7 +103,7 @@ if is_installed codex; then
       warn "  codex live test failed: $(echo "$out" | tail -1)"
     fi
   else
-    warn "  OLLAMA_CLOUD_API_KEY not in env — source secrets.env first"
+    warn "  OLLAMA_CLOUD_MAX_API_KEY not in env — source secrets.env first"
   fi
 else
   warn "  codex not installed"

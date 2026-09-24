@@ -94,8 +94,8 @@ diagnostics() {
   fi
   if op account list >/dev/null 2>&1; then
     echo "    ${C_GREEN}ok${C_RESET}  1Password signed in"
-    if value="$(op item get "Ollama Cloud Pro API Key" --fields credential --reveal 2>/dev/null)" && [[ -n "$value" ]]; then
-      echo "    ${C_GREEN}ok${C_RESET}  secret read works (Ollama Cloud Pro API Key)"
+    if value="$(op item get "Ollama Cloud Max API Key" --fields credential --reveal 2>/dev/null)" && [[ -n "$value" ]]; then
+      echo "    ${C_GREEN}ok${C_RESET}  secret read works (Ollama Cloud Max API Key)"
     else
       echo "    ${C_YELLOW}missing${C_RESET}  cannot read secrets — CLI session broken"
     fi
@@ -107,8 +107,8 @@ diagnostics() {
   else
     echo "    ${C_YELLOW}missing${C_RESET}  1Password not signed in"
   fi
-  if [[ -n "${OLLAMA_CLOUD_API_KEY:-}" ]] \
-      || ([[ -f "$HOME/.config/op/secrets.env" ]] && grep -q "OLLAMA_CLOUD_API_KEY=" "$HOME/.config/op/secrets.env"); then
+  if [[ -n "${OLLAMA_CLOUD_MAX_API_KEY:-}" ]] \
+      || ([[ -f "$HOME/.config/op/secrets.env" ]] && grep -q "OLLAMA_CLOUD_MAX_API_KEY=" "$HOME/.config/op/secrets.env"); then
     echo "    ${C_GREEN}ok${C_RESET}  codex ready (ollama-cloud key present)"
   else
     echo "    ${C_YELLOW}missing${C_RESET}  codex key missing — run 80-auth.sh"

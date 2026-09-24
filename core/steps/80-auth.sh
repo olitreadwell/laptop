@@ -43,12 +43,12 @@ if is_installed codex; then
   fi
 fi
 
-# Ollama Cloud Pro keys (codex provider) from 1Password -> ~/.config/op/secrets.env.
-# Sourced by dotfiles zshrc; codex reads OLLAMA_CLOUD_API_KEY(_2) at runtime.
+# Ollama Cloud Max key (codex provider) from 1Password -> ~/.config/op/secrets.env.
+# Sourced by dotfiles zshrc; codex reads OLLAMA_CLOUD_MAX_API_KEY at runtime.
 secrets_file="$HOME/.config/op/secrets.env"
 mkdir -p "$(dirname "$secrets_file")"
 backup_file "$secrets_file"
-for pair in "Ollama Cloud Pro API Key:OLLAMA_CLOUD_API_KEY" "Ollama Cloud Pro 2 API Key:OLLAMA_CLOUD_API_KEY_2"; do
+for pair in "Ollama Cloud Max API Key:OLLAMA_CLOUD_MAX_API_KEY" "Ollama Cloud Pro API Key:OLLAMA_CLOUD_PRO_API_KEY"; do
   item="${pair%%:*}"; var="${pair##*:}"
   if value="$(op_read "$item")" && [[ -n "$value" ]]; then
     if [[ -f "$secrets_file" ]]; then

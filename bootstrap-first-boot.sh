@@ -7,6 +7,11 @@
 #   curl -fsSL https://raw.githubusercontent.com/olitreadwell/laptop/main/bootstrap-first-boot.sh | bash
 set -euo pipefail
 
+# One-shot: once bootstrap completes, never re-arm or re-run at login.
+if [[ -f "$HOME/.laptop/state/bootstrap-complete" ]]; then
+  exit 0
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$SCRIPT_DIR"
 if [[ ! -d "$REPO_DIR/.git" ]]; then
@@ -21,6 +26,7 @@ echo "[$(date '+%Y-%m-%d %H:%M:%S')] first-boot bootstrap start — log: $LOG"
 PLIST="$HOME/Library/LaunchAgents/com.olitreadwell.laptop-bootstrap.plist"
 
 install_launch_agent() {
+  [[ -f "$HOME/.laptop/state/bootstrap-complete" ]] && return 0
   mkdir -p "$(dirname "$PLIST")"
   cat > "$PLIST" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -44,6 +50,8 @@ EOF
 disable_launch_agent() {
   launchctl bootout "gui/$(id -u)" "$PLIST" 2>/dev/null || true
   mv "$PLIST" "$PLIST.done" 2>/dev/null || true
+  mkdir -p "$HOME/.laptop/state"
+  : > "$HOME/.laptop/state/bootstrap-complete"
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] launch agent disabled — bootstrap done"
 }
 

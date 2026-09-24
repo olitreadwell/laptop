@@ -41,12 +41,18 @@ fi
 
 # 4. LaunchAgents — the automation stack (career, dashboards, digests,
 #    loops, gmail-mcp, etc.). Loads each; missing target scripts fail
-#    gracefully and work once their repos/credentials exist.
+#    gracefully and work once their repos/credentials exist. Retired
+#    agents (gmail-mcp, gmail scheduler) and the one-shot first-boot
+#    bootstrap are never restored.
+SKIP_AGENTS="com.olitreadwell.laptop-bootstrap com.olitreadwell.gmail-mcp io.gmail.scheduler"
 if [[ -d "$LAPTOP_REPO_DIR/automation/launchagents" ]]; then
   mkdir -p "$HOME/Library/LaunchAgents"
   for f in "$LAPTOP_REPO_DIR/automation/launchagents/"*.plist; do
     [[ -f "$f" ]] || continue
     name="$(basename "$f")"
+    case " $SKIP_AGENTS " in
+      *" ${name%.plist} "*) log "skipping retired agent: $name"; continue ;;
+    esac
     dest="$HOME/Library/LaunchAgents/$name"
     if [[ -f "$dest" ]] && ! diff -q "$f" "$dest" >/dev/null 2>&1; then
       backup_file "$dest"
