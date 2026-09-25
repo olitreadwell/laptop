@@ -9,7 +9,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       # shellcheck is preinstalled on the ubuntu runner; tests/run.sh skips it
       # when it is missing, so the step below confirms it is actually there.
       - name: shellcheck present
