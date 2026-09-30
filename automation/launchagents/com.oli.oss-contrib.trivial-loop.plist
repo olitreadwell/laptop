@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.oli.oss-contrib.trivial-loop</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/oli/.local/bin/launchd/oss-contrib-loop-trivial</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StandardErrorPath</key>
+	<string>/Users/oli/Library/Logs/oss-contrib-loop-trivial.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/oli/Library/Logs/oss-contrib-loop-trivial.log</string>
+	<key>StartInterval</key>
+	<integer>1800</integer>
+</dict>
+</plist>

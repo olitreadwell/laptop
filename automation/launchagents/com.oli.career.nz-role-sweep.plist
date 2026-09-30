@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>CAREER_REPO_ROOT</key>
+		<string>/Users/oli/Library/Mobile Documents/com~apple~CloudDocs/career</string>
+		<key>CODEX_BIN</key>
+		<string>/Users/oli/.local/share/mise/installs/node/lts/bin/codex</string>
+		<key>HOME</key>
+		<string>/Users/oli</string>
+		<key>PATH</key>
+		<string>/opt/homebrew/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>Label</key>
+	<string>com.oli.career.nz-role-sweep</string>
+	<key>ProcessType</key>
+	<string>Background</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/oli/.career-nz-sweep/run-nz-role-sweep.sh</string>
+	</array>
+	<key>RunAtLoad</key>
+	<false/>
+	<key>StandardErrorPath</key>
+	<string>/Users/oli/.career-nz-sweep/logs/launchd.err.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/oli/.career-nz-sweep/logs/launchd.out.log</string>
+	<key>StartCalendarInterval</key>
+	<array>
+		<dict>
+			<key>Hour</key>
+			<integer>7</integer>
+			<key>Minute</key>
+			<integer>20</integer>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>11</integer>
+			<key>Minute</key>
+			<integer>20</integer>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>15</integer>
+			<key>Minute</key>
+			<integer>20</integer>
+		</dict>
+		<dict>
+			<key>Hour</key>
+			<integer>19</integer>
+			<key>Minute</key>
+			<integer>20</integer>
+		</dict>
+	</array>
+	<key>WorkingDirectory</key>
+	<string>/Users/oli/.career-nz-sweep</string>
+</dict>
+</plist>

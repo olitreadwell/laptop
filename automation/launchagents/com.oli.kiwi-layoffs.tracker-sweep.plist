@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>PATH</key>
+		<string>/Users/oli/.local/share/mise/installs/node/lts/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+	</dict>
+	<key>Label</key>
+	<string>com.oli.kiwi-layoffs.tracker-sweep</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>/Users/oli/code/kiwi-layoffs/scripts/sweep-layoff-news.sh</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/oli/code/kiwi-layoffs/data/layoffs/sweep.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/oli/code/kiwi-layoffs/data/layoffs/sweep.log</string>
+	<key>StartInterval</key>
+	<integer>1800</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/oli/code/kiwi-layoffs</string>
+</dict>
+</plist>
