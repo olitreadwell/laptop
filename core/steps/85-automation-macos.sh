@@ -40,11 +40,31 @@ if [[ -d "$LAPTOP_REPO_DIR/automation/orca-agent-hooks" ]]; then
 fi
 
 # 4. LaunchAgents — the automation stack (career, dashboards, digests,
-#    loops, gmail-mcp, etc.). Loads each; missing target scripts fail
-#    gracefully and work once their repos/credentials exist. Retired
-#    agents (gmail-mcp, gmail scheduler) and the one-shot first-boot
-#    bootstrap are never restored.
+#    loops, etc.). Label scheme: com.oli.<area>.<job>, see
+#    automation/launchagents/NAMING.md. Loads each; missing target scripts
+#    fail gracefully and work once their repos/credentials exist.
+#
+#    SKIP_AGENTS is a safety net for retired labels. The retired plists in
+#    this directory end in .done or .disabled and are already excluded by
+#    the *.plist glob, so the list only matters if one is ever renamed
+#    back to .plist.
+#
+#    A destination that is a symlink belongs to another repo (the
+#    dotfiles install links three of these into ~/Library/LaunchAgents).
+#    Copying over it would write through the link and edit that repo's
+#    file from here, so leave it alone.
 SKIP_AGENTS="com.olitreadwell.laptop-bootstrap com.olitreadwell.gmail-mcp io.gmail.scheduler"
+
+# archive_agent <dest> — move a LaunchAgent that is about to be replaced out
+# of ~/Library/LaunchAgents. backup_file() would copy it to
+# <dest>.bak.<epoch> in place, which left 400+ backup files next to the live
+# agents; the archive directory keeps that history without the clutter.
+archive_agent() {
+  local dest="$1" dir="$HOME/.launchagents-archive/plist-backups"
+  mkdir -p "$dir"
+  mv "$dest" "$dir/$(basename "$dest").$(date +%s)"
+}
+
 if [[ -d "$LAPTOP_REPO_DIR/automation/launchagents" ]]; then
   mkdir -p "$HOME/Library/LaunchAgents"
   for f in "$LAPTOP_REPO_DIR/automation/launchagents/"*.plist; do
@@ -54,8 +74,12 @@ if [[ -d "$LAPTOP_REPO_DIR/automation/launchagents" ]]; then
       *" ${name%.plist} "*) log "skipping retired agent: $name"; continue ;;
     esac
     dest="$HOME/Library/LaunchAgents/$name"
+    if [[ -L "$dest" ]]; then
+      log "skipping $name: symlinked from another repo"
+      continue
+    fi
     if [[ -f "$dest" ]] && ! diff -q "$f" "$dest" >/dev/null 2>&1; then
-      backup_file "$dest"
+      archive_agent "$dest"
     fi
     cp "$f" "$dest"
     fix_home_paths "$dest"
